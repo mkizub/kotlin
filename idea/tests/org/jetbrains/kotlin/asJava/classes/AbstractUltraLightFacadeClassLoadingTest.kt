@@ -38,6 +38,7 @@ abstract class AbstractUltraLightFacadeClassTest : KotlinLightCodeInsightFixture
             val ultraLightClass = UltraLightChecker.checkFacadeEquivalence(FqName(facadeName), scope, project)
             if (ultraLightClass != null) {
                 checkClassLoadingExpectations(file, ultraLightClass)
+                UltraLightChecker.checkDescriptorsLeak(ultraLightClass)
             }
         }
     }

@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.asJava.classes
 import com.intellij.testFramework.LightProjectDescriptor
 import org.jetbrains.kotlin.asJava.LightClassGenerationSupport
 import org.jetbrains.kotlin.idea.perf.UltraLightChecker
+import org.jetbrains.kotlin.idea.perf.UltraLightChecker.checkDescriptorsLeak
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinWithJdkAndRuntimeLightProjectDescriptor
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -33,6 +34,7 @@ abstract class AbstractUltraLightClassLoadingTest : KotlinLightCodeInsightFixtur
                     with(UltraLightChecker) {
                         ultraLightClass.renderClass().also {
                             checkClassLoadingExpectations(ktClass, ultraLightClass)
+                            checkDescriptorsLeak(ultraLightClass)
                         }
                     }
                 }
@@ -45,6 +47,7 @@ abstract class AbstractUltraLightClassLoadingTest : KotlinLightCodeInsightFixtur
             val ultraLightClass = UltraLightChecker.checkClassEquivalence(ktClass)
             if (ultraLightClass != null) {
                 checkClassLoadingExpectations(ktClass, ultraLightClass)
+                checkDescriptorsLeak(ultraLightClass)
             }
         }
 
