@@ -16,10 +16,12 @@
 
 package org.jetbrains.kotlin.idea.project;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -60,7 +62,8 @@ public class TargetPlatformDetector {
             return contextFile instanceof KtFile ? getPlatform((KtFile) contextFile) : JvmPlatforms.INSTANCE.getUnspecifiedJvmPlatform();
         }
 
-        if (file.isScript()) {
+        final boolean isScript = ApplicationManager.getApplication().runReadAction((Computable<Boolean>) () -> file.isScript());
+        if (isScript) {
             ScriptDefinition scriptDefinition = DefinitionsKt.findScriptDefinition(file);
             if (scriptDefinition != null) {
                 return getPlatform(file.getProject(), scriptDefinition);
