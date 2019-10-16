@@ -62,8 +62,7 @@ class RedundantGotoMethodTransformer : MethodTransformer() {
                         currentLabels.clear()
                     }
                 }
-                insn is LineNumberNode -> pendingGoto = null
-                insn.isMeaningful -> {
+                insn is LineNumberNode || (insn.isMeaningful && insn.opcode != Opcodes.NOP) -> {
                     currentLabels.clear()
                     pendingGoto = null
                 }
