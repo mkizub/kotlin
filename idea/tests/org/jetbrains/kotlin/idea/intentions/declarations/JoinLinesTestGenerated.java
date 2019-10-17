@@ -139,6 +139,7 @@ public class JoinLinesTestGenerated extends AbstractJoinLinesTest {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/joinLines/declarationAndAssignment"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
 
+
         @TestMetadata("blankLineBetween.kt")
         public void testBlankLineBetween() throws Exception {
             runTest("idea/testData/joinLines/declarationAndAssignment/blankLineBetween.kt");
