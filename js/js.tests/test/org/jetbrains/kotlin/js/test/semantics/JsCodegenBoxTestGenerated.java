@@ -21297,6 +21297,11 @@ public class JsCodegenBoxTestGenerated extends AbstractJsCodegenBoxTest {
                 runTest("compiler/testData/codegen/box/when/enumOptimization/nonConstantEnum.kt");
             }
 
+            @TestMetadata("nullIsTheFirstEntry.kt")
+            public void testNullIsTheFirstEntry() throws Exception {
+                runTest("compiler/testData/codegen/box/when/enumOptimization/nullIsTheFirstEntry.kt");
+            }
+
             @TestMetadata("nullability.kt")
             public void testNullability() throws Exception {
                 runTest("compiler/testData/codegen/box/when/enumOptimization/nullability.kt");
