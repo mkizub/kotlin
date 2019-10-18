@@ -12,7 +12,7 @@ import java.io.File
 
 private val RUN_MUTED_TESTS = java.lang.Boolean.getBoolean("org.jetbrains.kotlin.run.muted.tests")
 private val AUTOMATICALLY_MUTE_FAILED_TESTS_WITH_CONTENT: String? = null
-private val AUTOMATICALLY_GENERATE_FAIL_FILE_FOR_FAILED_TESTS: Boolean = true
+private val AUTOMATICALLY_GENERATE_FAIL_FILE_FOR_FAILED_TESTS: Boolean = false
 
 annotation class MuteExtraSuffix(val value: String = "")
 
@@ -117,8 +117,7 @@ private fun checkFailFile(failure: Throwable, testDataFile: File, extraSuffix: S
 
     if (failFile == null) {
         if (AUTOMATICALLY_GENERATE_FAIL_FILE_FOR_FAILED_TESTS) {
-            muteFileNoCheck(testDataFile, extraSuffix).writeText(failMessage(failure))
-            return false
+            failFileNoCheck(testDataFile, extraSuffix).writeText(failMessage(failure))
         }
 
         return false
