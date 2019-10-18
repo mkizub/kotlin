@@ -138,11 +138,14 @@ class JavaClassEnhancementScope(
     ): FirFunctionSymbol<*> {
         val classId = firMethod.symbol.callableId.classId
         val classSymbol = classId?.let { session.firSymbolProvider.getClassLikeSymbolByFqName(it) }
-        val javaTypeParameterStack = (classSymbol?.fir as? FirJavaClass)?.javaTypeParameterStack ?: this.javaTypeParameterStack
+        val javaTypeParameterStack =
+            (classSymbol?.fir as? FirJavaClass)?.javaTypeParameterStack?.plus(this.javaTypeParameterStack) ?: this.javaTypeParameterStack
         val memberContext = context.copyWithNewDefaultTypeQualifiers(typeQualifierResolver, jsr305State, firMethod.annotations)
 
         val predefinedEnhancementInfo =
-            SignatureBuildingComponents.signature(owner.symbol.classId, firMethod.computeJvmDescriptor()).let { signature ->
+            SignatureBuildingComponents.signature(
+                owner.symbol.classId, firMethod.computeJvmDescriptor(javaTypeParameterStack)
+            ).let { signature ->
                 PREDEFINED_FUNCTION_ENHANCEMENT_INFO_BY_SIGNATURE[signature]
             }
 
@@ -240,7 +243,7 @@ class JavaClassEnhancementScope(
         return function.symbol
     }
 
-    private fun FirFunction<*>.computeJvmDescriptor(): String = buildString {
+    private fun FirFunction<*>.computeJvmDescriptor(javaTypeParameterStack: JavaTypeParameterStack): String = buildString {
         if (this@computeJvmDescriptor is FirJavaMethod) {
             append(name.asString())
         } else {
@@ -249,18 +252,18 @@ class JavaClassEnhancementScope(
 
         append("(")
         for (parameter in valueParameters) {
-            appendErasedType(parameter.returnTypeRef)
+            appendErasedType(parameter.returnTypeRef, javaTypeParameterStack)
         }
         append(")")
 
         if (this@computeJvmDescriptor !is FirJavaMethod || (returnTypeRef as FirJavaTypeRef).isVoid()) {
             append("V")
         } else {
-            appendErasedType(returnTypeRef)
+            appendErasedType(returnTypeRef, javaTypeParameterStack)
         }
     }
 
-    private fun StringBuilder.appendErasedType(typeRef: FirTypeRef) {
+    private fun StringBuilder.appendErasedType(typeRef: FirTypeRef, javaTypeParameterStack: JavaTypeParameterStack) {
         when (typeRef) {
             is FirResolvedTypeRef -> appendConeType(typeRef.type)
             is FirJavaTypeRef -> appendConeType(typeRef.toNotNullConeKotlinType(session, javaTypeParameterStack))

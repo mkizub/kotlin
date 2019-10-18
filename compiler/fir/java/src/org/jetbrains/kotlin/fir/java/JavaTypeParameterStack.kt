@@ -25,6 +25,13 @@ internal class JavaTypeParameterStack {
         typeParameterMap.remove(javaTypeParameter)
     }
 
+    operator fun plus(other: JavaTypeParameterStack): JavaTypeParameterStack {
+        val newStack = JavaTypeParameterStack()
+        newStack.addStack(this)
+        newStack.addStack(other)
+        return newStack
+    }
+
     operator fun get(javaTypeParameter: JavaTypeParameter): FirTypeParameterSymbol {
         return safeGet(javaTypeParameter)
             ?: throw IllegalArgumentException("Cannot find Java type parameter $javaTypeParameter in stack")
