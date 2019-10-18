@@ -127,11 +127,12 @@ class JavaSymbolProvider(
                                 val unmappedSymbol = unmappedType.lookupTag.toSymbol(useSiteSession)
                                 if (unmappedSymbol is FirClassSymbol && visitedSymbols.add(unmappedSymbol)) {
                                     val unmappedClass = unmappedSymbol.fir
-                                    return@mapNotNull JavaClassUseSiteScope(
+                                    val useSiteScope = JavaClassUseSiteScope(
                                         unmappedClass, useSiteSession,
                                         FirSuperTypeScope(useSiteSession, listOf(mappedTypeScope)),
                                         declaredMemberScope(unmappedClass)
                                     )
+                                    return@mapNotNull JavaClassEnhancementScope(session, useSiteScope)
                                 }
                             }
                         }
