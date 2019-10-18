@@ -11,7 +11,7 @@ import org.junit.Assert
 import java.io.File
 
 private val RUN_MUTED_TESTS = java.lang.Boolean.getBoolean("org.jetbrains.kotlin.run.muted.tests")
-private val AUTOMATICALLY_MUTE_FAILED_TESTS_WITH_CONTENT: String? = "REMOVE_REMOVE"
+private val AUTOMATICALLY_MUTE_FAILED_TESTS_WITH_CONTENT: String? = null
 
 annotation class MuteExtraSuffix(val value: String = "")
 
