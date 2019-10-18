@@ -137,7 +137,7 @@ class JavaSymbolProvider(
     ) {
         require(this is FirTypeParameterImpl)
         for (upperBound in javaTypeParameter.upperBounds) {
-            bounds += upperBound.toFirResolvedTypeRef(this@JavaSymbolProvider.session, stack)
+            bounds += upperBound.toFirJavaSuperTypeRef(this@JavaSymbolProvider.session, stack)
         }
         addDefaultBoundIfNecessary()
     }
@@ -187,7 +187,7 @@ class JavaSymbolProvider(
                     this.typeParameters += foundClass.typeParameters.convertTypeParameters(javaTypeParameterStack)
                     addAnnotationsFrom(this@JavaSymbolProvider.session, javaClass, javaTypeParameterStack)
                     for (supertype in javaClass.supertypes) {
-                        superTypeRefs += supertype.toFirResolvedTypeRef(this@JavaSymbolProvider.session, javaTypeParameterStack)
+                        superTypeRefs += supertype.toFirJavaSuperTypeRef(this@JavaSymbolProvider.session, javaTypeParameterStack)
                     }
                     // TODO: may be we can process fields & methods later.
                     // However, they should be built up to override resolve stage
