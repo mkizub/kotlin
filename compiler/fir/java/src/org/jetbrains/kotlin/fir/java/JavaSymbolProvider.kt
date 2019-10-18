@@ -9,13 +9,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.addDefaultBoundIfNecessary
-import org.jetbrains.kotlin.fir.declarations.impl.FirDeclarationStatusImpl
 import org.jetbrains.kotlin.fir.declarations.impl.FirTypeParameterImpl
 import org.jetbrains.kotlin.fir.declarations.visibility
 import org.jetbrains.kotlin.fir.java.declarations.FirJavaClass
@@ -24,6 +22,7 @@ import org.jetbrains.kotlin.fir.java.declarations.FirJavaField
 import org.jetbrains.kotlin.fir.java.declarations.FirJavaMethod
 import org.jetbrains.kotlin.fir.java.scopes.JavaClassEnhancementScope
 import org.jetbrains.kotlin.fir.java.scopes.JavaClassUseSiteScope
+import org.jetbrains.kotlin.fir.java.types.FirJavaSuperTypeRef
 import org.jetbrains.kotlin.fir.resolve.*
 import org.jetbrains.kotlin.fir.scopes.FirScope
 import org.jetbrains.kotlin.fir.scopes.impl.FirSuperTypeScope
@@ -31,6 +30,7 @@ import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.symbols.CallableId
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeClassErrorType
+import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.impl.ConeTypeParameterTypeImpl
 import org.jetbrains.kotlin.fir.types.impl.FirResolvedTypeRefImpl
 import org.jetbrains.kotlin.load.java.JavaClassFinder
@@ -86,6 +86,22 @@ class JavaSymbolProvider(
         }
     }
 
+    private fun ConeClassLikeType.toJavaScope(
+        useSiteSession: FirSession,
+        scopeSession: ScopeSession,
+        visitedSymbols: MutableSet<FirClassLikeSymbol<*>>
+    ): FirScope? {
+        val symbol = lookupTag.toSymbol(useSiteSession)
+        return if (symbol is FirClassSymbol && visitedSymbols.add(symbol)) {
+            // We need JavaClassEnhancementScope here to have already enhanced signatures from supertypes
+            val scope = buildJavaEnhancementScope(useSiteSession, symbol, scopeSession, visitedSymbols)
+            visitedSymbols.remove(symbol)
+            wrapSubstitutionScopeIfNeed(useSiteSession, scope, symbol.fir, scopeSession)
+        } else {
+            null
+        }
+    }
+
     private fun buildJavaUseSiteScope(
         regularClass: FirRegularClass,
         useSiteSession: FirSession,
@@ -94,20 +110,40 @@ class JavaSymbolProvider(
     ): JavaClassUseSiteScope {
         return scopeSession.getOrBuild(regularClass.symbol, JAVA_USE_SITE) {
             val declaredScope = declaredMemberScope(regularClass)
-            val superTypeEnhancementScopes =
-                lookupSuperTypes(regularClass, lookupInterfaces = true, deep = false, useSiteSession = useSiteSession)
-                    .mapNotNull { useSiteSuperType ->
-                        if (useSiteSuperType is ConeClassErrorType) return@mapNotNull null
-                        val symbol = useSiteSuperType.lookupTag.toSymbol(useSiteSession)
-                        if (symbol is FirClassSymbol && visitedSymbols.add(symbol)) {
-                            // We need JavaClassEnhancementScope here to have already enhanced signatures from supertypes
-                            val scope = buildJavaEnhancementScope(useSiteSession, symbol, scopeSession, visitedSymbols)
-                            visitedSymbols.remove(symbol)
-                            useSiteSuperType.wrapSubstitutionScopeIfNeed(useSiteSession, scope, symbol.fir, scopeSession)
-                        } else {
-                            null
+            val superTypeEnhancementScopes = when (regularClass) {
+                is FirJavaClass -> {
+                    val javaSuperTypes = regularClass.superTypeRefs
+                    javaSuperTypes.mapNotNull { javaSuperType ->
+                        val mappedType = javaSuperType.toExpandedSuperConeTypeIfAny(useSiteSession)
+                            ?: return@mapNotNull null
+                        if (mappedType is ConeClassErrorType) return@mapNotNull null
+                        val mappedTypeScope = mappedType.toJavaScope(useSiteSession, scopeSession, visitedSymbols)
+                        if (javaSuperType is FirJavaSuperTypeRef && mappedTypeScope != null) {
+                            val unmappedType = javaSuperType.unmappedType
+                            if (mappedType !== unmappedType && unmappedType is ConeClassLikeType) {
+                                // "Fake" scope is created here
+                                // When java (unmapped) class is considered "derived",
+                                // and kotlin (mapped) class is considered "base"
+                                val unmappedSymbol = unmappedType.lookupTag.toSymbol(useSiteSession)
+                                if (unmappedSymbol is FirClassSymbol && visitedSymbols.add(unmappedSymbol)) {
+                                    val unmappedClass = unmappedSymbol.fir
+                                    return@mapNotNull JavaClassUseSiteScope(
+                                        unmappedClass, useSiteSession,
+                                        FirSuperTypeScope(useSiteSession, listOf(mappedTypeScope)),
+                                        declaredMemberScope(unmappedClass)
+                                    )
+                                }
+                            }
                         }
+                        mappedTypeScope
                     }
+                }
+                else -> lookupSuperTypes(regularClass, lookupInterfaces = true, deep = false, useSiteSession = useSiteSession)
+                    .mapNotNull { useSiteSuperConeType ->
+                        if (useSiteSuperConeType is ConeClassErrorType) return@mapNotNull null
+                        useSiteSuperConeType.toJavaScope(useSiteSession, scopeSession, visitedSymbols)
+                    }
+            }
             JavaClassUseSiteScope(
                 regularClass, useSiteSession,
                 FirSuperTypeScope(useSiteSession, superTypeEnhancementScopes), declaredScope
