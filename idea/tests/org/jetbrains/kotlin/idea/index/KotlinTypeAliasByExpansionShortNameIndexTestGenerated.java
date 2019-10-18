@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class KotlinTypeAliasByExpansionShortNameIndexTestGenerated extends AbstractKotlinTypeAliasByExpansionShortNameIndexTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInTypealiasExpansionIndex() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/typealiasExpansionIndex"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/typealiasExpansionIndex"), Pattern.compile("^(.+)\\.kt$"), true);
     }
 
     @TestMetadata("functionalTypes.kt")

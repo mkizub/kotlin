@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class SmartSelectionTestGenerated extends AbstractSmartSelectionTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTestSmartSelection, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTestSmartSelection, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInSmartSelection() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/smartSelection"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/smartSelection"), Pattern.compile("^([^.]+)\\.kt$"), true);
     }
 
     @TestMetadata("commentsAndExtraSpaces.kt")

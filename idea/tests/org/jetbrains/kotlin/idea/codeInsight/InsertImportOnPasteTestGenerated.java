@@ -24,11 +24,11 @@ public class InsertImportOnPasteTestGenerated extends AbstractInsertImportOnPast
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Copy extends AbstractInsertImportOnPasteTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCopy, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCopy, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInCopy() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/imports"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/imports"), Pattern.compile("^([^.]+)\\.kt$"), false);
         }
 
         @TestMetadata("AlreadyImportedExtensions.kt")
@@ -367,11 +367,11 @@ public class InsertImportOnPasteTestGenerated extends AbstractInsertImportOnPast
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Cut extends AbstractInsertImportOnPasteTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCut, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCut, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInCut() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/imports"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/imports"), Pattern.compile("^([^.]+)\\.kt$"), false);
         }
 
         @TestMetadata("AlreadyImportedExtensions.kt")

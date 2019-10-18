@@ -24,11 +24,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Cfg_variables extends AbstractDataFlowTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInCfg_variables() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("compiler/testData/cfg-variables/basic")
@@ -36,11 +36,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Basic extends AbstractDataFlowTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInBasic() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/basic"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/basic"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("ExhaustiveInitialization.kt")
@@ -84,11 +84,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Bugs extends AbstractDataFlowTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInBugs() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/bugs"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/bugs"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("doWhileAssignment.kt")
@@ -152,11 +152,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class LexicalScopes extends AbstractDataFlowTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInLexicalScopes() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/lexicalScopes"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfg-variables/lexicalScopes"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("doWhileScope.kt")
@@ -226,11 +226,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class CfgVariablesWithStdLib extends AbstractDataFlowTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestWithStdLib, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestWithStdLib, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInCfgVariablesWithStdLib() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfgVariablesWithStdLib"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfgVariablesWithStdLib"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("compiler/testData/cfgVariablesWithStdLib/contracts")
@@ -238,11 +238,11 @@ public class DataFlowTestGenerated extends AbstractDataFlowTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Contracts extends AbstractDataFlowTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTestWithStdLib, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTestWithStdLib, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInContracts() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfgVariablesWithStdLib/contracts"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/cfgVariablesWithStdLib/contracts"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("breakContinuesInInlinedLambda.kt")

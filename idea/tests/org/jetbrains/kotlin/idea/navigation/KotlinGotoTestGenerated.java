@@ -24,11 +24,11 @@ public class KotlinGotoTestGenerated extends AbstractKotlinGotoTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class GotoClass extends AbstractKotlinGotoTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doClassTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doClassTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInGotoClass() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/navigation/gotoClass"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/navigation/gotoClass"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("builtInAny.kt")
@@ -92,11 +92,11 @@ public class KotlinGotoTestGenerated extends AbstractKotlinGotoTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class GotoSymbol extends AbstractKotlinGotoTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doSymbolTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doSymbolTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInGotoSymbol() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/navigation/gotoSymbol"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/navigation/gotoSymbol"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("builtInArrayOfNulls.kt")

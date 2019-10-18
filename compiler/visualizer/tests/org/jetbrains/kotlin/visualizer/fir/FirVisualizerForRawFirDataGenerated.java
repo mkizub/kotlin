@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class FirVisualizerForRawFirDataGenerated extends AbstractFirVisualizer {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doFirBuilderDataTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doFirBuilderDataTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInRawBuilder() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder"), Pattern.compile("^(.+)\\.kt$"), true);
     }
 
     @TestMetadata("compiler/fir/psi2fir/testData/rawBuilder/declarations")
@@ -34,11 +34,11 @@ public class FirVisualizerForRawFirDataGenerated extends AbstractFirVisualizer {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Declarations extends AbstractFirVisualizer {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doFirBuilderDataTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doFirBuilderDataTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInDeclarations() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder/declarations"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder/declarations"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("complexTypes.kt")
@@ -147,11 +147,11 @@ public class FirVisualizerForRawFirDataGenerated extends AbstractFirVisualizer {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Expressions extends AbstractFirVisualizer {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doFirBuilderDataTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doFirBuilderDataTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInExpressions() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder/expressions"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder/expressions"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("annotated.kt")

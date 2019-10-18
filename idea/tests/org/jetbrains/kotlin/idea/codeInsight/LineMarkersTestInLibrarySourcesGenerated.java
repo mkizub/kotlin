@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class LineMarkersTestInLibrarySourcesGenerated extends AbstractLineMarkersTestInLibrarySources {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTestWithLibrary, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTestWithLibrary, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInLineMarker() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/codeInsightInLibrary/lineMarker"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/codeInsightInLibrary/lineMarker"), Pattern.compile("^(.+)\\.kt$"), true);
     }
 
     @TestMetadata("dummy.kt")

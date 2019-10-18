@@ -24,11 +24,11 @@ public class AndroidBoxTestGenerated extends AbstractAndroidBoxTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Android extends AbstractAndroidBoxTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doCompileAgainstAndroidSdkTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doCompileAgainstAndroidSdkTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInAndroid() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("plugins/android-extensions/android-extensions-compiler/testData/codegen/android"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("plugins/android-extensions/android-extensions-compiler/testData/codegen/android"), Pattern.compile("^([^\\.]+)$"), false);
         }
 
         @TestMetadata("androidEntity")
@@ -87,11 +87,11 @@ public class AndroidBoxTestGenerated extends AbstractAndroidBoxTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Invoke extends AbstractAndroidBoxTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doFakeInvocationTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doFakeInvocationTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInInvoke() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("plugins/android-extensions/android-extensions-compiler/testData/codegen/android"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("plugins/android-extensions/android-extensions-compiler/testData/codegen/android"), Pattern.compile("^([^\\.]+)$"), false);
         }
 
         @TestMetadata("androidEntity")

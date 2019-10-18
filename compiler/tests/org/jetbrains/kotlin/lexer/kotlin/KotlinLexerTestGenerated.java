@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInKotlin() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin"), Pattern.compile("^(.+)\\.kt$"), true);
     }
 
     @TestMetadata("compiler/testData/lexer/kotlin/whitespaceCharacters")
@@ -34,11 +34,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class WhitespaceCharacters extends AbstractKotlinLexerTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInWhitespaceCharacters() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("compiler/testData/lexer/kotlin/whitespaceCharacters/carriageReturn")
@@ -46,11 +46,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class CarriageReturn extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInCarriageReturn() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/carriageReturn"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/carriageReturn"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("carriageReturn.kt")
@@ -74,11 +74,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class LineSeparator extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInLineSeparator() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/lineSeparator"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/lineSeparator"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("lineSeparator.kt")
@@ -102,11 +102,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class NextLine extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInNextLine() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/nextLine"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/nextLine"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("nextLine.kt")
@@ -130,11 +130,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class PageBreak extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInPageBreak() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/pageBreak"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/pageBreak"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("pageBreak.kt")
@@ -158,11 +158,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class ParagraphSeparator extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInParagraphSeparator() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/paragraphSeparator"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/paragraphSeparator"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("paragraphSeparator.kt")
@@ -186,11 +186,11 @@ public class KotlinLexerTestGenerated extends AbstractKotlinLexerTest {
         @RunWith(JUnit3RunnerWithInners.class)
         public static class VerticalTab extends AbstractKotlinLexerTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInVerticalTab() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/verticalTab"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/lexer/kotlin/whitespaceCharacters/verticalTab"), Pattern.compile("^(.+)\\.kt$"), true);
             }
 
             @TestMetadata("verticalTab.kt")

@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class PsiVisualizerForUncommonCasesGenerated extends AbstractPsiVisualizer {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doUncommonCasesTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doUncommonCasesTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInTestFiles() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/visualizer/testData/uncommonCases/testFiles"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/visualizer/testData/uncommonCases/testFiles"), Pattern.compile("^(.+)\\.kt$"), true);
     }
 
     @TestMetadata("dataClass.kt")

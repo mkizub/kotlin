@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class PerformanceLiteralKotlinToKotlinCopyPasteTestGenerated extends AbstractPerformanceLiteralKotlinToKotlinCopyPasteTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doPerfTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doPerfTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInLiteral() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/literal"), Pattern.compile("^([^\\.]+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/copyPaste/literal"), Pattern.compile("^([^\\.]+)\\.kt$"), true);
     }
 
     @TestMetadata("CollectionLiteralReference.kt")

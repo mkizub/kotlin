@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaWithFastClassReadingTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInCompiledJava() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava"), Pattern.compile("^(.+)\\.java$"), true);
     }
 
     @TestMetadata("ArrayTypeVariance.java")
@@ -259,11 +259,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Annotations extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInAnnotations() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/annotations"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/annotations"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("AnnotatedAnnotation.java")
@@ -462,11 +462,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Constructor extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInConstructor() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/constructor"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/constructor"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ConstructorGenericDeep.java")
@@ -490,11 +490,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Enum extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInEnum() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/enum"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/enum"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("EnumMembers.java")
@@ -518,11 +518,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class JavaBean extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInJavaBean() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/javaBean"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/javaBean"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("DifferentGetterAndSetter.java")
@@ -561,7 +561,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class KotlinSignature extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         @TestMetadata("AllBoundsInWhen.java")
@@ -570,7 +570,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
         }
 
         public void testAllFilesPresentInKotlinSignature() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ArrayType.java")
@@ -653,11 +653,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Error extends AbstractLoadJavaWithFastClassReadingTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInError() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/error"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/error"), Pattern.compile("^(.+)\\.java$"), true);
             }
 
             @TestMetadata("WrongProjectionKind.java")
@@ -686,11 +686,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Propagation extends AbstractLoadJavaWithFastClassReadingTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInPropagation() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation"), Pattern.compile("^(.+)\\.java$"), true);
             }
 
             @TestMetadata("PropagateTypeArgumentNullable.java")
@@ -703,11 +703,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
             @RunWith(JUnit3RunnerWithInners.class)
             public static class Parameter extends AbstractLoadJavaWithFastClassReadingTest {
                 private void runTest(String testDataFilePath) throws Exception {
-                    KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                    KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
                 }
 
                 public void testAllFilesPresentInParameter() throws Exception {
-                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/parameter"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/parameter"), Pattern.compile("^(.+)\\.java$"), true);
                 }
 
                 @TestMetadata("ChangeProjectionKind1.java")
@@ -826,7 +826,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
             @RunWith(JUnit3RunnerWithInners.class)
             public static class Return extends AbstractLoadJavaWithFastClassReadingTest {
                 private void runTest(String testDataFilePath) throws Exception {
-                    KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                    KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
                 }
 
                 @TestMetadata("AddNotNullJavaSubtype.java")
@@ -860,7 +860,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
                 }
 
                 public void testAllFilesPresentInReturn() throws Exception {
-                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/return"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/return"), Pattern.compile("^(.+)\\.java$"), true);
                 }
 
                 @TestMetadata("CantMakeImmutableInSubclass.java")
@@ -1009,11 +1009,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
             @RunWith(JUnit3RunnerWithInners.class)
             public static class TypeParameter extends AbstractLoadJavaWithFastClassReadingTest {
                 private void runTest(String testDataFilePath) throws Exception {
-                    KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                    KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
                 }
 
                 public void testAllFilesPresentInTypeParameter() throws Exception {
-                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/typeParameter"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/kotlinSignature/propagation/typeParameter"), Pattern.compile("^(.+)\\.java$"), true);
                 }
 
                 @TestMetadata("InheritNullability.java")
@@ -1059,11 +1059,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Library extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInLibrary() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/library"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/library"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("LoadIterable.java")
@@ -1087,11 +1087,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Modality extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInModality() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/modality"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/modality"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ModalityOfFakeOverrides.java")
@@ -1105,11 +1105,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Mutability extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInMutability() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/mutability"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/mutability"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("LoadIterable.java")
@@ -1143,11 +1143,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class NotNull extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInNotNull() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/notNull"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/notNull"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("NotNullField.java")
@@ -1181,11 +1181,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class ProtectedPackage extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInProtectedPackage() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/protectedPackage"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/protectedPackage"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ProtectedPackageConstructor.java")
@@ -1209,11 +1209,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class ProtectedStatic extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInProtectedStatic() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/protectedStatic"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/protectedStatic"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ConstructorInProtectedStaticNestedClass.java")
@@ -1227,11 +1227,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Rendering extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInRendering() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/rendering"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/rendering"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("Rendering.java")
@@ -1245,11 +1245,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Sam extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInSam() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("Comparator.java")
@@ -1337,11 +1337,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
         @RunWith(JUnit3RunnerWithInners.class)
         public static class Adapters extends AbstractLoadJavaWithFastClassReadingTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInAdapters() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam/adapters"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam/adapters"), Pattern.compile("^(.+)\\.java$"), true);
             }
 
             @TestMetadata("AmbiguousAdapters.java")
@@ -1419,7 +1419,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
             @RunWith(JUnit3RunnerWithInners.class)
             public static class Inheritance extends AbstractLoadJavaWithFastClassReadingTest {
                 private void runTest(String testDataFilePath) throws Exception {
-                    KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+                    KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
                 }
 
                 @TestMetadata("AdapterDoesntOverrideDeclaration.java")
@@ -1428,7 +1428,7 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
                 }
 
                 public void testAllFilesPresentInInheritance() throws Exception {
-                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam/adapters/inheritance"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                    KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/sam/adapters/inheritance"), Pattern.compile("^(.+)\\.java$"), true);
                 }
 
                 @TestMetadata("InheritedAdapterAndDeclaration.java")
@@ -1484,11 +1484,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class SignatureAnnotations extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInSignatureAnnotations() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/signatureAnnotations"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/signatureAnnotations"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("StableName.java")
@@ -1502,11 +1502,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class SignaturePropagation extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInSignaturePropagation() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/signaturePropagation"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/signaturePropagation"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("ArraysInSubtypes.java")
@@ -1560,11 +1560,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Static extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInStatic() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/static"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/static"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("DeeplyInnerClass.java")
@@ -1628,11 +1628,11 @@ public class LoadJavaWithFastClassReadingTestGenerated extends AbstractLoadJavaW
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Vararg extends AbstractLoadJavaWithFastClassReadingTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestCompiledJava, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestCompiledJava, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInVararg() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/vararg"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/loadJava/compiledJava/vararg"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("VarargInt.java")

@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhancementTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInEnhancement() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement"), Pattern.compile("^(.+)\\.java$"), true);
     }
 
     @TestMetadata("compiler/fir/resolve/testData/enhancement/jsr305")
@@ -34,11 +34,11 @@ public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhanc
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Jsr305 extends AbstractOwnFirTypeEnhancementTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInJsr305() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/jsr305"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/jsr305"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("NonNullNever.java")
@@ -61,11 +61,11 @@ public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhanc
         @RunWith(JUnit3RunnerWithInners.class)
         public static class TypeQualifierDefault extends AbstractOwnFirTypeEnhancementTest {
             private void runTest(String testDataFilePath) throws Exception {
-                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
             }
 
             public void testAllFilesPresentInTypeQualifierDefault() throws Exception {
-                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/jsr305/typeQualifierDefault"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/jsr305/typeQualifierDefault"), Pattern.compile("^(.+)\\.java$"), true);
             }
 
             @TestMetadata("FieldsAreNullable.java")
@@ -120,7 +120,7 @@ public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhanc
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Mapping extends AbstractOwnFirTypeEnhancementTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         @TestMetadata("AbstractMap.java")
@@ -129,7 +129,7 @@ public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhanc
         }
 
         public void testAllFilesPresentInMapping() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/mapping"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/mapping"), Pattern.compile("^(.+)\\.java$"), true);
         }
     }
 
@@ -138,11 +138,11 @@ public class OwnFirTypeEnhancementTestGenerated extends AbstractOwnFirTypeEnhanc
     @RunWith(JUnit3RunnerWithInners.class)
     public static class SignatureAnnotations extends AbstractOwnFirTypeEnhancementTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInSignatureAnnotations() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/signatureAnnotations"), Pattern.compile("^(.+)\\.java$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/resolve/testData/enhancement/signatureAnnotations"), Pattern.compile("^(.+)\\.java$"), true);
         }
 
         @TestMetadata("DefaultEnum.java")

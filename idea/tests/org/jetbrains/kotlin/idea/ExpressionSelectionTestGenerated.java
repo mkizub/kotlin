@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class ExpressionSelectionTestGenerated extends AbstractExpressionSelectionTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTestExpressionSelection, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTestExpressionSelection, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInExpressionSelection() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/expressionSelection"), Pattern.compile("^([^.]+)\\.kt$"), TargetBackend.ANY, true);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/expressionSelection"), Pattern.compile("^([^.]+)\\.kt$"), true);
     }
 
     @TestMetadata("binaryExpr.kt")

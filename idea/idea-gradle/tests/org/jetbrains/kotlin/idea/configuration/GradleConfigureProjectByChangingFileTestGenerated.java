@@ -24,11 +24,11 @@ public class GradleConfigureProjectByChangingFileTestGenerated extends AbstractG
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Gradle extends AbstractGradleConfigureProjectByChangingFileTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestGradle, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestGradle, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInGradle() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/configuration/gradle"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/configuration/gradle"), Pattern.compile("^([^\\.]+)$"), false);
         }
 
         @TestMetadata("default")
@@ -82,11 +82,11 @@ public class GradleConfigureProjectByChangingFileTestGenerated extends AbstractG
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Gsk extends AbstractGradleConfigureProjectByChangingFileTest {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTestGradle, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTestGradle, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInGsk() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/configuration/gsk"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, false);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/configuration/gsk"), Pattern.compile("^([^\\.]+)$"), false);
         }
 
         @TestMetadata("eap11Version")

@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 @RunWith(JUnit3RunnerWithInners.class)
 public class ReferenceToJavaWithWrongFileStructureTestGenerated extends AbstractReferenceToJavaWithWrongFileStructureTest {
     private void runTest(String testDataFilePath) throws Exception {
-        KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
     }
 
     public void testAllFilesPresentInReferenceToJavaWithWrongFileStructure() throws Exception {
-        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/resolve/referenceToJavaWithWrongFileStructure"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, false);
+        KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("idea/testData/resolve/referenceToJavaWithWrongFileStructure"), Pattern.compile("^(.+)\\.kt$"), false);
     }
 
     @TestMetadata("ClassStatics.kt")
