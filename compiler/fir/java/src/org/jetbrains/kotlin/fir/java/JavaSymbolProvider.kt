@@ -249,6 +249,7 @@ class JavaSymbolProvider(
                         val methodId = CallableId(classId.packageFqName, classId.relativeClassName, methodName)
                         val methodSymbol = FirNamedFunctionSymbol(methodId)
                         val returnType = javaMethod.returnType
+                        val methodTypeParameters = javaMethod.typeParameters.convertTypeParameters(javaTypeParameterStack)
                         val firJavaMethod = FirJavaMethod(
                             this@JavaSymbolProvider.session, (javaMethod as? JavaElementImpl<*>)?.psi,
                             methodSymbol, methodName,
@@ -256,7 +257,7 @@ class JavaSymbolProvider(
                             returnTypeRef = returnType.toFirJavaTypeRef(this@JavaSymbolProvider.session, javaTypeParameterStack),
                             isStatic = javaMethod.isStatic
                         ).apply {
-                            this.typeParameters += javaMethod.typeParameters.convertTypeParameters(javaTypeParameterStack)
+                            this.typeParameters += methodTypeParameters
                             addAnnotationsFrom(this@JavaSymbolProvider.session, javaMethod, javaTypeParameterStack)
                             for (valueParameter in javaMethod.valueParameters) {
                                 valueParameters += valueParameter.toFirValueParameters(
