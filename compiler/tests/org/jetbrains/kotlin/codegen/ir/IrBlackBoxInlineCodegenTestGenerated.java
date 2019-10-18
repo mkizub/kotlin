@@ -625,6 +625,16 @@ public class IrBlackBoxInlineCodegenTestGenerated extends AbstractIrBlackBoxInli
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/boxInline/assert"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM_IR, true);
         }
 
+        @TestMetadata("jvmAssertInLambdaCallingLambda.kt")
+        public void testJvmAssertInLambdaCallingLambda() throws Exception {
+            runTest("compiler/testData/codegen/boxInline/assert/jvmAssertInLambdaCallingLambda.kt");
+        }
+
+        @TestMetadata("jvmAssertInSAMCallingLambda.kt")
+        public void testJvmAssertInSAMCallingLambda() throws Exception {
+            runTest("compiler/testData/codegen/boxInline/assert/jvmAssertInSAMCallingLambda.kt");
+        }
+
         @TestMetadata("jvmAssertInlineFunctionAssertionsDisabled.kt")
         public void testJvmAssertInlineFunctionAssertionsDisabled() throws Exception {
             runTest("compiler/testData/codegen/boxInline/assert/jvmAssertInlineFunctionAssertionsDisabled.kt");
