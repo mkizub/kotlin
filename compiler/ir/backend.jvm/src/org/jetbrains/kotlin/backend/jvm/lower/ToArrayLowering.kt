@@ -83,6 +83,7 @@ private class ToArrayLowering(private val context: JvmBackendContext) : ClassLow
                 isInline = false,
                 isExternal = false,
                 isTailrec = false,
+                isRule = false,
                 isSuspend = false,
                 isExpect = false
             )
@@ -153,6 +154,7 @@ private class ToArrayLowering(private val context: JvmBackendContext) : ClassLow
                 isInline = false,
                 isExternal = false,
                 isTailrec = false,
+                isRule = false,
                 isSuspend = false,
                 isExpect = false
             )

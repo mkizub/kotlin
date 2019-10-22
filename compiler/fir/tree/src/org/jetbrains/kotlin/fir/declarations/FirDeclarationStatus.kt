@@ -33,6 +33,7 @@ interface FirDeclarationStatus : FirElement {
     val isInner: Boolean
     val isCompanion: Boolean
     val isData: Boolean
+    val isRule: Boolean
     val isSuspend: Boolean
     val isStatic: Boolean
 

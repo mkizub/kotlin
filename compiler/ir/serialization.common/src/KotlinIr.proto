@@ -527,6 +527,7 @@ message IrFunction {
   required bool is_suspend = 4;
   repeated int32 overridden = 5;
   //optional UniqId corresponding_property = 7;
+  optional bool is_rule = 8;
 }
 
 message IrConstructor {

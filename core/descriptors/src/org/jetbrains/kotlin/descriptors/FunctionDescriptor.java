@@ -66,6 +66,8 @@ public interface FunctionDescriptor extends CallableMemberDescriptor {
 
     boolean isHiddenForResolutionEverywhereBesideSupercalls();
 
+    boolean isRule();
+
     boolean isSuspend();
 
     @NotNull

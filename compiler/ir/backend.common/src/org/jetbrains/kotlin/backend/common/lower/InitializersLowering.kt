@@ -148,6 +148,7 @@ class InitializersLowering(
             isInline = false,
             isExternal = false,
             isTailrec = false,
+            isRule = false,
             isSuspend = false,
             isExpect = false
         ).apply {

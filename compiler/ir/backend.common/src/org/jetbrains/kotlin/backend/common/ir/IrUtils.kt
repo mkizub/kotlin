@@ -485,6 +485,7 @@ fun IrClass.addFakeOverrides() {
                 isInline = irFunction.isInline,
                 isExternal = irFunction.isExternal,
                 isTailrec = irFunction.isTailrec,
+                isRule = irFunction.isRule,
                 isSuspend = irFunction.isSuspend,
                 isExpect = irFunction.isExpect
             ).apply {
@@ -525,6 +526,7 @@ fun createStaticFunctionWithReceivers(
         isInline = oldFunction.isInline,
         isExternal = false,
         isTailrec = false,
+        isRule = oldFunction.isRule,
         isSuspend = oldFunction.isSuspend,
         isExpect = oldFunction.isExpect
     ).apply {

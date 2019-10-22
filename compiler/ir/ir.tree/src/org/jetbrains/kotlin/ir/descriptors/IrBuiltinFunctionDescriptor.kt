@@ -53,6 +53,7 @@ abstract class IrBuiltinOperatorDescriptorBase(containingDeclaration: Declaratio
     override fun isInfix(): Boolean = false
     override fun isInline(): Boolean = false
     override fun isOperator(): Boolean = false
+    override fun isRule(): Boolean = false
     override fun isSuspend(): Boolean = false
     override fun isTailrec(): Boolean = false
     override fun isExpect(): Boolean = false

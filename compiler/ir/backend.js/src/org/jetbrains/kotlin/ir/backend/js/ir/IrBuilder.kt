@@ -92,6 +92,7 @@ object JsIrBuilder {
         isInline: Boolean = false,
         isExternal: Boolean = false,
         isTailrec: Boolean = false,
+        isRule: Boolean = false,
         isSuspend: Boolean = false,
         isExpect: Boolean = false,
         origin: IrDeclarationOrigin = SYNTHESIZED_DECLARATION
@@ -104,6 +105,7 @@ object JsIrBuilder {
         isInline = isInline,
         isExternal = isExternal,
         isTailrec = isTailrec,
+        isRule = isRule,
         isSuspend = isSuspend,
         isExpect = isExpect,
         origin = origin
@@ -118,6 +120,7 @@ object JsIrBuilder {
         isInline: Boolean = false,
         isExternal: Boolean = false,
         isTailrec: Boolean = false,
+        isRule: Boolean = false,
         isSuspend: Boolean = false,
         isExpect: Boolean = false,
         origin: IrDeclarationOrigin = SYNTHESIZED_DECLARATION
@@ -135,6 +138,7 @@ object JsIrBuilder {
             isInline = isInline,
             isExternal = isExternal,
             isTailrec = isTailrec,
+            isRule = isRule,
             isSuspend = isSuspend,
             isExpect = isExpect
         ).also {

@@ -21,6 +21,7 @@ class TypeModifier(
 
     fun addModifier(modifier: LighterASTNode) {
         when (modifier.tokenType) {
+            KtTokens.RULE_KEYWORD -> this.hasSuspend = true
             KtTokens.SUSPEND_KEYWORD -> this.hasSuspend = true
         }
     }

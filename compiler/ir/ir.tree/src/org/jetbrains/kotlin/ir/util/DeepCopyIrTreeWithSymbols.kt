@@ -168,6 +168,7 @@ open class DeepCopyIrTreeWithSymbols(
             isInline = declaration.isInline,
             isExternal = declaration.isExternal,
             isTailrec = declaration.isTailrec,
+            isRule = declaration.isRule,
             isSuspend = declaration.isSuspend,
             isExpect = declaration.isExpect
         ).apply {

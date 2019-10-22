@@ -362,6 +362,7 @@ class Fir2IrDeclarationStorage(
                         isInline = function.isInline,
                         isExternal = function.isExternal,
                         isTailrec = function.isTailRec,
+                        isRule = function.isRule,
                         isSuspend = function.isSuspend,
                         isExpect = function.isExpect
                     )
@@ -399,6 +400,7 @@ class Fir2IrDeclarationStorage(
                     Visibilities.LOCAL, Modality.FINAL,
                     function.returnTypeRef.toIrType(session, this),
                     isInline = false, isExternal = false, isTailrec = false,
+                    isRule = false,
                     // TODO: suspend lambda
                     isSuspend = false,
                     isExpect = false
@@ -455,7 +457,7 @@ class Fir2IrDeclarationStorage(
                 Name.special("<$prefix-${correspondingProperty.name}>"),
                 propertyAccessor?.visibility ?: correspondingProperty.visibility,
                 correspondingProperty.modality, accessorReturnType,
-                isInline = false, isExternal = false, isTailrec = false, isSuspend = false, isExpect = false
+                isInline = false, isExternal = false, isTailrec = false, isRule = false, isSuspend = false, isExpect = false
             ).apply {
                 if (propertyAccessor == null && isSetter) {
                     declareDefaultSetterParameter(propertyType)

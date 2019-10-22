@@ -39,6 +39,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     // 2. isHiddenForResolutionEverywhereBesideSupercalls propagates to it's overrides descriptors while isHiddenToOvercomeSignatureClash does not
     private boolean isHiddenToOvercomeSignatureClash = false;
     private boolean isHiddenForResolutionEverywhereBesideSupercalls = false;
+    private boolean isRule = false;
     private boolean isSuspend = false;
     private boolean hasStableParameterNames = true;
     private boolean hasSynthesizedParameterNames = false;
@@ -139,6 +140,10 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
 
     private void setHiddenForResolutionEverywhereBesideSupercalls(boolean hiddenForResolutionEverywhereBesideSupercalls) {
         isHiddenForResolutionEverywhereBesideSupercalls = hiddenForResolutionEverywhereBesideSupercalls;
+    }
+
+    public void setRule(boolean rule) {
+        isRule = rule;
     }
 
     public void setSuspend(boolean suspend) {
@@ -243,6 +248,11 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
     @Override
     public boolean isTailrec() {
         return isTailrec;
+    }
+
+    @Override
+    public boolean isRule() {
+        return isRule;
     }
 
     @Override

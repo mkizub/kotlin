@@ -23,6 +23,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiModifiableCodeBlock;
 import com.intellij.psi.impl.source.tree.CompositeElement;
 import com.intellij.psi.impl.source.tree.LazyParseablePsiElement;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.IncorrectOperationException;
 import kotlin.annotations.jvm.ReadOnly;
@@ -41,8 +42,8 @@ import static org.jetbrains.kotlin.KtNodeTypes.BLOCK;
 
 public class KtBlockExpression extends LazyParseablePsiElement implements KtElement, KtExpression, KtStatementExpression, PsiModifiableCodeBlock {
 
-    public KtBlockExpression(@Nullable CharSequence text) {
-        super(BLOCK, text);
+    public KtBlockExpression(@NotNull IElementType type, @Nullable CharSequence text) {
+        super(type, text);
     }
 
     @Override

@@ -31,6 +31,7 @@ class IrFunctionImpl(
     isInline: Boolean,
     isExternal: Boolean,
     override val isTailrec: Boolean,
+    override val isRule: Boolean,
     override val isSuspend: Boolean,
     isExpect: Boolean
 ) :
@@ -54,6 +55,7 @@ class IrFunctionImpl(
         isInline = symbol.descriptor.isInline,
         isExternal = symbol.descriptor.isExternal,
         isTailrec = symbol.descriptor.isTailrec,
+        isRule = symbol.descriptor.isRule,
         isSuspend = symbol.descriptor.isSuspend,
         isExpect = symbol.descriptor.isExpect
     )

@@ -31,6 +31,7 @@ object ModifierSets {
             INFIX_KEYWORD,
             INLINE_KEYWORD,
             EXTERNAL_KEYWORD,
+            RULE_KEYWORD,
             SUSPEND_KEYWORD
         )
     val PROPERTY_MODIFIER = TokenSet.create(CONST_KEYWORD)

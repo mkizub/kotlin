@@ -45,26 +45,31 @@ public interface IrFunctionOrBuilder extends
 
   /**
    * <code>repeated int32 overridden = 5;</code>
-   *
-   * <pre>
-   *optional UniqId corresponding_property = 7;
-   * </pre>
    */
   java.util.List<java.lang.Integer> getOverriddenList();
   /**
    * <code>repeated int32 overridden = 5;</code>
-   *
-   * <pre>
-   *optional UniqId corresponding_property = 7;
-   * </pre>
    */
   int getOverriddenCount();
   /**
    * <code>repeated int32 overridden = 5;</code>
+   */
+  int getOverridden(int index);
+
+  /**
+   * <code>optional bool is_rule = 8;</code>
    *
    * <pre>
    *optional UniqId corresponding_property = 7;
    * </pre>
    */
-  int getOverridden(int index);
+  boolean hasIsRule();
+  /**
+   * <code>optional bool is_rule = 8;</code>
+   *
+   * <pre>
+   *optional UniqId corresponding_property = 7;
+   * </pre>
+   */
+  boolean getIsRule();
 }

@@ -21,6 +21,7 @@ class IrFunctionBuilder : IrDeclarationBuilder() {
 
     var modality: Modality = Modality.FINAL
     var isTailrec: Boolean = false
+    var isRule: Boolean = false
     var isSuspend: Boolean = false
     var isExpect: Boolean = false
 

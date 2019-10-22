@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.LocalTimeCounter
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -869,7 +870,7 @@ class KtPsiFactory @JvmOverloads constructor(private val project: Project, val m
     }
 
     private class BlockWrapper(fakeBlockExpression: KtBlockExpression, private val expression: KtExpression) :
-        KtBlockExpression(fakeBlockExpression.text), KtPsiUtil.KtExpressionWrapper {
+        KtBlockExpression(fakeBlockExpression.elementType, fakeBlockExpression.text), KtPsiUtil.KtExpressionWrapper {
 
         override fun getStatements(): List<KtExpression> {
             return listOf(expression)

@@ -1066,6 +1066,7 @@ open class IrFileSerializer(
             .setBase(serializeIrFunctionBase(declaration))
             .setModality(serializeModality(declaration.modality))
             .setIsTailrec(declaration.isTailrec)
+            .setIsRule(declaration.isRule)
             .setIsSuspend(declaration.isSuspend)
 
         declaration.overriddenSymbols.forEach {

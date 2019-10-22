@@ -402,6 +402,7 @@ open class WrappedSimpleFunctionDescriptor(
         .toMutableList()
 
     override fun isExternal() = owner.isExternal
+    override fun isRule() = owner.isRule
     override fun isSuspend() = owner.isSuspend
     override fun isTailrec() = owner.isTailrec
     override fun isInline() = owner.isInline
@@ -537,6 +538,8 @@ open class WrappedClassConstructorDescriptor(
     override fun isActual() = false
 
     override fun isInfix() = false
+
+    override fun isRule() = false
 
     override fun isSuspend() = false
 

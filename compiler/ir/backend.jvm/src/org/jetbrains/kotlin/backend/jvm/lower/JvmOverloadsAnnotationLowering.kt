@@ -148,6 +148,7 @@ private class JvmOverloadsAnnotationLowering(val context: JvmBackendContext) : C
                     isInline = oldFunction.isInline,
                     isExternal = false,
                     isTailrec = false,
+                    isRule = oldFunction.isRule,
                     isSuspend = oldFunction.isSuspend,
                     isExpect = false
                 ).apply {

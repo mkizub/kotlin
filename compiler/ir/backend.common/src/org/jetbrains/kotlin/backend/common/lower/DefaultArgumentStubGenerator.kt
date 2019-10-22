@@ -520,6 +520,7 @@ private fun buildFunctionDeclaration(irFunction: IrFunction, origin: IrDeclarati
                 isInline = irFunction.isInline,
                 isExternal = false,
                 isTailrec = false,
+                isRule = irFunction.isRule,
                 isSuspend = irFunction.isSuspend,
                 isExpect = irFunction.isExpect
             ).also {

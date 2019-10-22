@@ -21,11 +21,11 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.parsing.KotlinParser
 import org.jetbrains.kotlin.psi.KtBlockExpression
 
-class BlockExpressionElementType : IErrorCounterReparseableElementType("BLOCK", KotlinLanguage.INSTANCE), ICompositeElementType {
+class BlockExpressionElementType(val comma: Boolean) : IErrorCounterReparseableElementType(if (comma) "COMMA_EXPRESSION" else "BLOCK", KotlinLanguage.INSTANCE), ICompositeElementType {
 
-    override fun createCompositeNode() = KtBlockExpression(null)
+    override fun createCompositeNode() = KtBlockExpression(this, null)
 
-    override fun createNode(text: CharSequence?) = KtBlockExpression(text)
+    override fun createNode(text: CharSequence?) = KtBlockExpression(this, text)
 
     override fun isParsable(parent: ASTNode?, buffer: CharSequence, fileLanguage: Language, project: Project) =
         fileLanguage == KotlinLanguage.INSTANCE &&

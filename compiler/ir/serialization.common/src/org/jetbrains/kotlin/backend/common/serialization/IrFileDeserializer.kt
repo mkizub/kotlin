@@ -1056,6 +1056,7 @@ abstract class IrFileDeserializer(
                     isInline = proto.base.isInline,
                     isExternal = proto.base.isExternal,
                     isTailrec = proto.isTailrec,
+                    isRule = proto.isRule,
                     isSuspend = proto.isSuspend,
                     isExpect = proto.base.isExpect
                 )

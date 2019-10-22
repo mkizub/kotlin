@@ -1301,7 +1301,7 @@ public class KotlinExpressionParsing extends AbstractKotlinParsing {
 
     /*
      * blockLevelExpression
-     *  : annotations + ("\n")+ expression
+     *  : annotations + ("\n")+ commaExpression
      *  ;
      */
     private void parseBlockLevelExpression() {
@@ -1311,7 +1311,7 @@ public class KotlinExpressionParsing extends AbstractKotlinParsing {
 
             if (!myBuilder.newlineBeforeCurrentToken()) {
                 expression.rollbackTo();
-                parseExpression();
+                parseCommaExpression();
                 return;
             }
 
@@ -1320,7 +1320,28 @@ public class KotlinExpressionParsing extends AbstractKotlinParsing {
             return;
         }
 
-        parseExpression();
+        parseCommaExpression();
+    }
+
+    /*
+     * commaExpression
+     *  : expression + ("," expression)*
+     *  ;
+     */
+    private void parseCommaExpression() {
+        int count = 0;
+        PsiBuilder.Marker comma_expression = mark();
+        do {
+            parseExpression();
+            ++count;
+            if (!at(COMMA))
+                break;
+            advance(); // COMMA
+        } while (true);
+        if (count > 1)
+            comma_expression.done(COMMA_EXPRESSION);
+        else
+            comma_expression.drop();
     }
 
     /*

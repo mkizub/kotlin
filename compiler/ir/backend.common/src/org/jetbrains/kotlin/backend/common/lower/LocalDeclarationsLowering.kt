@@ -521,6 +521,7 @@ class LocalDeclarationsLowering(
                 isInline = oldDeclaration.isInline,
                 isExternal = oldDeclaration.isExternal,
                 isTailrec = oldDeclaration.isTailrec,
+                isRule = oldDeclaration.isRule,
                 isSuspend = oldDeclaration.isSuspend,
                 isExpect = oldDeclaration.isExpect
             )

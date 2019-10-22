@@ -102,6 +102,11 @@ public abstract class PropertyAccessorDescriptorImpl extends DeclarationDescript
     }
 
     @Override
+    public boolean isRule() {
+        return false;
+    }
+
+    @Override
     public boolean isSuspend() {
         return false;
     }

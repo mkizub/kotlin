@@ -487,6 +487,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 isInline = false,
                 isExternal = false,
                 isTailrec = false,
+                isRule = false,
                 isSuspend = false,
                 isExpect = false
             ).apply {
@@ -553,6 +554,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                 isInline = false,
                 isExternal = false,
                 isTailrec = false,
+                isRule = false,
                 isSuspend = true,
                 isExpect = false
             ).apply {
@@ -611,6 +613,7 @@ abstract class AbstractSuspendFunctionsLowering<C : CommonBackendContext>(val co
                     isInline = stateMachineFunction.isInline,
                     isExternal = stateMachineFunction.isExternal,
                     isTailrec = stateMachineFunction.isTailrec,
+                    isRule = stateMachineFunction.isRule,
                     isSuspend = stateMachineFunction.isSuspend,
                     isExpect = stateMachineFunction.isExpect
                 ).apply {
