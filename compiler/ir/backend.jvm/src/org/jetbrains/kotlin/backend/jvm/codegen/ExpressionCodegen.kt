@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrTypeParameterSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
@@ -131,7 +132,7 @@ class ExpressionCodegen(
     val IrExpression.asmType: Type
         get() = type.asmType
 
-    val IrVariable.asmType: Type
+    val IrValueDeclaration.asmType: Type
         get() = type.asmType
 
     // Assume this expression's result has already been materialized on the stack
@@ -512,10 +513,14 @@ class ExpressionCodegen(
 
     override fun visitSetVariable(expression: IrSetVariable, data: BlockInfo): PromisedValue {
         expression.markLineNumber(startOffset = true)
-        expression.value.markLineNumber(startOffset = true)
-        expression.value.accept(this, data).coerce(expression.symbol.owner.type).materialize()
-        mv.store(findLocalIndex(expression.symbol), expression.symbol.owner.asmType)
+        setVariable(expression.symbol, expression.value, data)
         return defaultValue(expression.type)
+    }
+
+    fun setVariable(symbol: IrValueSymbol, value: IrExpression, data: BlockInfo) {
+        value.markLineNumber(startOffset = true)
+        value.accept(this, data).coerce(symbol.owner.type).materialize()
+        mv.store(findLocalIndex(symbol), symbol.owner.asmType)
     }
 
     override fun <T> visitConst(expression: IrConst<T>, data: BlockInfo): PromisedValue {
@@ -590,9 +595,6 @@ class ExpressionCodegen(
 
         val endLabel = Label()
         val exhaustive = expression.branches.any { it.condition.isTrueConst() }
-        assert(exhaustive || expression.type.isUnit() || expression.type.isNothing()) {
-            "non-exhaustive conditional should return Unit: ${expression.dump()}"
-        }
         for (branch in expression.branches) {
             val elseLabel = Label()
             if (branch.condition.isFalseConst() || branch.condition.isTrueConst()) {
@@ -619,6 +621,14 @@ class ExpressionCodegen(
             mv.mark(elseLabel)
         }
         mv.mark(endLabel)
+        // NOTE: using a non-exhaustive if/when as an expression is invalid, so it should theoretically
+        //       always return Unit. However, with the current frontend this is not always the case.
+        //       Most notably, 1. when all branches return/break/continue, the type is Nothing;
+        //       2. the frontend may sometimes infer Any instead of Unit, probably due to a bug
+        //       (see compiler/testData/codegen/box/controlStructures/ifIncompatibleBranches.kt).
+        //       It should still be safe to produce a soon-to-be-discarded Unit. (What is not ok is
+        //       inserting *any* code here, though, as its line number will be that of the last line
+        //       of the last branch.)
         return immaterialUnitValue
     }
 

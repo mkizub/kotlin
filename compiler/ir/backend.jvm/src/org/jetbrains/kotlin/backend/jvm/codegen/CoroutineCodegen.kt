@@ -66,7 +66,8 @@ internal fun generateStateMachineForNamedFunction(
         shouldPreserveClassInitialization = state.constructorCallNormalizationMode.shouldPreserveClassInitialization,
         containingClassInternalName = classCodegen.visitor.thisName,
         isForNamedFunction = true,
-        needDispatchReceiver = irFunction.dispatchReceiverParameter != null,
+        needDispatchReceiver = irFunction.dispatchReceiverParameter != null
+                || irFunction.origin == JvmLoweredDeclarationOrigin.SUSPEND_IMPL_STATIC_FUNCTION,
         internalNameForDispatchReceiver = classCodegen.visitor.thisName,
         putContinuationParameterToLvt = false
     )
@@ -107,8 +108,16 @@ internal fun IrFunction.isInvokeOfSuspendCallableReference(): Boolean = isSuspen
         (parent as? IrClass)?.origin == JvmLoweredDeclarationOrigin.FUNCTION_REFERENCE_IMPL
 
 internal fun IrFunction.isKnownToBeTailCall(): Boolean =
-    origin == IrDeclarationOrigin.FUNCTION_FOR_DEFAULT_PARAMETER || origin == JvmLoweredDeclarationOrigin.SYNTHETIC_ACCESSOR ||
-            isInvokeOfSuspendCallableReference()
+    when (origin) {
+        IrDeclarationOrigin.FUNCTION_FOR_DEFAULT_PARAMETER,
+        JvmLoweredDeclarationOrigin.SYNTHETIC_ACCESSOR,
+        JvmLoweredDeclarationOrigin.DEFAULT_IMPLS_BRIDGE,
+        JvmLoweredDeclarationOrigin.DEFAULT_IMPLS_BRIDGE_TO_SYNTHETIC,
+        IrDeclarationOrigin.BRIDGE,
+        IrDeclarationOrigin.BRIDGE_SPECIAL,
+        IrDeclarationOrigin.DELEGATED_MEMBER -> true
+        else -> isInvokeOfSuspendCallableReference()
+    }
 
 internal fun IrFunction.shouldNotContainSuspendMarkers(context: JvmBackendContext): Boolean =
     isInvokeSuspendOfContinuation(context) || isKnownToBeTailCall()
@@ -186,7 +195,7 @@ internal fun IrCall.createSuspendFunctionCallViewIfNeeded(
     if (!isSuspend) return this
     val view = (symbol.owner as IrSimpleFunction).getOrCreateSuspendFunctionViewIfNeeded(context)
     if (view == symbol.owner) return this
-    return IrCallImpl(startOffset, endOffset, view.returnType, view.symbol).also {
+    return IrCallImpl(startOffset, endOffset, view.returnType, view.symbol, superQualifierSymbol = superQualifierSymbol).also {
         it.copyTypeArgumentsFrom(this)
         it.dispatchReceiver = dispatchReceiver
         it.extensionReceiver = extensionReceiver

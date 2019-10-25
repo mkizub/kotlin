@@ -4458,6 +4458,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/collections/removeAtInt.kt");
         }
 
+        @TestMetadata("removeClash.kt")
+        public void testRemoveClash() throws Exception {
+            runTest("compiler/testData/codegen/box/collections/removeClash.kt");
+        }
+
         @TestMetadata("strList.kt")
         public void testStrList() throws Exception {
             runTest("compiler/testData/codegen/box/collections/strList.kt");
@@ -4838,6 +4843,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/controlStructures/ifConst2.kt");
         }
 
+        @TestMetadata("ifIncompatibleBranches.kt")
+        public void testIfIncompatibleBranches() throws Exception {
+            runTest("compiler/testData/codegen/box/controlStructures/ifIncompatibleBranches.kt");
+        }
+
         @TestMetadata("inRangeConditionsInWhen.kt")
         public void testInRangeConditionsInWhen() throws Exception {
             runTest("compiler/testData/codegen/box/controlStructures/inRangeConditionsInWhen.kt");
@@ -5208,9 +5218,19 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 runTest("compiler/testData/codegen/box/controlStructures/forInArray/forInDelegatedPropertyUpdatedInLoopBody.kt");
             }
 
+            @TestMetadata("forInDoubleArrayWithUpcast.kt")
+            public void testForInDoubleArrayWithUpcast() throws Exception {
+                runTest("compiler/testData/codegen/box/controlStructures/forInArray/forInDoubleArrayWithUpcast.kt");
+            }
+
             @TestMetadata("forInFieldUpdatedInLoopBody.kt")
             public void testForInFieldUpdatedInLoopBody() throws Exception {
                 runTest("compiler/testData/codegen/box/controlStructures/forInArray/forInFieldUpdatedInLoopBody.kt");
+            }
+
+            @TestMetadata("forInInlineClassArrayWithUpcast.kt")
+            public void testForInInlineClassArrayWithUpcast() throws Exception {
+                runTest("compiler/testData/codegen/box/controlStructures/forInArray/forInInlineClassArrayWithUpcast.kt");
             }
 
             @TestMetadata("forIntArray.kt")
@@ -11571,6 +11591,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
                 runTest("compiler/testData/codegen/box/functions/functionExpression/functionLiteralExpression.kt");
             }
 
+            @TestMetadata("insideGenericLambda.kt")
+            public void testInsideGenericLambda() throws Exception {
+                runTest("compiler/testData/codegen/box/functions/functionExpression/insideGenericLambda.kt");
+            }
+
             @TestMetadata("underscoreParameters.kt")
             public void testUnderscoreParameters() throws Exception {
                 runTest("compiler/testData/codegen/box/functions/functionExpression/underscoreParameters.kt");
@@ -12014,11 +12039,6 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/ieee754/nullableDoubleEquals.kt");
         }
 
-        @TestMetadata("nullableDoubleEquals10.kt")
-        public void testNullableDoubleEquals10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/nullableDoubleEquals10.kt");
-        }
-
         @TestMetadata("nullableDoubleEqualsLV13.kt")
         public void testNullableDoubleEqualsLV13() throws Exception {
             runTest("compiler/testData/codegen/box/ieee754/nullableDoubleEqualsLV13.kt");
@@ -12029,29 +12049,14 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/ieee754/nullableDoubleNotEquals.kt");
         }
 
-        @TestMetadata("nullableDoubleNotEquals10.kt")
-        public void testNullableDoubleNotEquals10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/nullableDoubleNotEquals10.kt");
-        }
-
         @TestMetadata("nullableFloatEquals.kt")
         public void testNullableFloatEquals() throws Exception {
             runTest("compiler/testData/codegen/box/ieee754/nullableFloatEquals.kt");
         }
 
-        @TestMetadata("nullableFloatEquals10.kt")
-        public void testNullableFloatEquals10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/nullableFloatEquals10.kt");
-        }
-
         @TestMetadata("nullableFloatNotEquals.kt")
         public void testNullableFloatNotEquals() throws Exception {
             runTest("compiler/testData/codegen/box/ieee754/nullableFloatNotEquals.kt");
-        }
-
-        @TestMetadata("nullableFloatNotEquals10.kt")
-        public void testNullableFloatNotEquals10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/nullableFloatNotEquals10.kt");
         }
 
         @TestMetadata("nullableIntEquals.kt")
@@ -12099,16 +12104,6 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/ieee754/when.kt");
         }
 
-        @TestMetadata("when10.kt")
-        public void testWhen10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/when10.kt");
-        }
-
-        @TestMetadata("when10_properIeeeComparisons.kt")
-        public void testWhen10_properIeeeComparisons() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/when10_properIeeeComparisons.kt");
-        }
-
         @TestMetadata("whenNoSubject.kt")
         public void testWhenNoSubject() throws Exception {
             runTest("compiler/testData/codegen/box/ieee754/whenNoSubject.kt");
@@ -12124,14 +12119,52 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/ieee754/whenNullableSmartCast.kt");
         }
 
-        @TestMetadata("whenNullableSmartCast10.kt")
-        public void testWhenNullableSmartCast10() throws Exception {
-            runTest("compiler/testData/codegen/box/ieee754/whenNullableSmartCast10.kt");
-        }
-
         @TestMetadata("when_properIeeeComparisons.kt")
         public void testWhen_properIeeeComparisons() throws Exception {
             runTest("compiler/testData/codegen/box/ieee754/when_properIeeeComparisons.kt");
+        }
+
+        @TestMetadata("compiler/testData/codegen/box/ieee754/oldLanguageVersions")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class OldLanguageVersions extends AbstractBlackBoxCodegenTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInOldLanguageVersions() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/ieee754/oldLanguageVersions"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM, true);
+            }
+
+            @TestMetadata("nullableDoubleEquals10.kt")
+            public void testNullableDoubleEquals10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/nullableDoubleEquals10.kt");
+            }
+
+            @TestMetadata("nullableDoubleNotEquals10.kt")
+            public void testNullableDoubleNotEquals10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/nullableDoubleNotEquals10.kt");
+            }
+
+            @TestMetadata("nullableFloatEquals10.kt")
+            public void testNullableFloatEquals10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/nullableFloatEquals10.kt");
+            }
+
+            @TestMetadata("nullableFloatNotEquals10.kt")
+            public void testNullableFloatNotEquals10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/nullableFloatNotEquals10.kt");
+            }
+
+            @TestMetadata("when10.kt")
+            public void testWhen10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/when10.kt");
+            }
+
+            @TestMetadata("whenNullableSmartCast10.kt")
+            public void testWhenNullableSmartCast10() throws Exception {
+                runTest("compiler/testData/codegen/box/ieee754/oldLanguageVersions/whenNullableSmartCast10.kt");
+            }
         }
     }
 
@@ -17360,11 +17393,6 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/operatorConventions/overloadedSet.kt");
         }
 
-        @TestMetadata("percentAsModOnBigIntegerWithoutRem.kt")
-        public void testPercentAsModOnBigIntegerWithoutRem() throws Exception {
-            runTest("compiler/testData/codegen/box/operatorConventions/percentAsModOnBigIntegerWithoutRem.kt");
-        }
-
         @TestMetadata("plusExplicit.kt")
         public void testPlusExplicit() throws Exception {
             runTest("compiler/testData/codegen/box/operatorConventions/plusExplicit.kt");
@@ -17440,6 +17468,24 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             @TestMetadata("longInt.kt")
             public void testLongInt() throws Exception {
                 runTest("compiler/testData/codegen/box/operatorConventions/compareTo/longInt.kt");
+            }
+        }
+
+        @TestMetadata("compiler/testData/codegen/box/operatorConventions/oldLanguageVersions")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class OldLanguageVersions extends AbstractBlackBoxCodegenTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInOldLanguageVersions() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/operatorConventions/oldLanguageVersions"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM, true);
+            }
+
+            @TestMetadata("percentAsModOnBigIntegerWithoutRem.kt")
+            public void testPercentAsModOnBigIntegerWithoutRem() throws Exception {
+                runTest("compiler/testData/codegen/box/operatorConventions/oldLanguageVersions/percentAsModOnBigIntegerWithoutRem.kt");
             }
         }
     }
@@ -18449,6 +18495,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             runTest("compiler/testData/codegen/box/properties/genericPropertyMultiModule.kt");
         }
 
+        @TestMetadata("initOrderMultiModule.kt")
+        public void testInitOrderMultiModule() throws Exception {
+            runTest("compiler/testData/codegen/box/properties/initOrderMultiModule.kt");
+        }
+
         @TestMetadata("javaPropertyBoxedGetter.kt")
         public void testJavaPropertyBoxedGetter() throws Exception {
             runTest("compiler/testData/codegen/box/properties/javaPropertyBoxedGetter.kt");
@@ -18657,6 +18708,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
         @TestMetadata("protectedJavaPropertyInCompanion.kt")
         public void testProtectedJavaPropertyInCompanion() throws Exception {
             runTest("compiler/testData/codegen/box/properties/protectedJavaPropertyInCompanion.kt");
+        }
+
+        @TestMetadata("sideEffectInTopLevelInitializerMultiModule.kt")
+        public void testSideEffectInTopLevelInitializerMultiModule() throws Exception {
+            runTest("compiler/testData/codegen/box/properties/sideEffectInTopLevelInitializerMultiModule.kt");
         }
 
         @TestMetadata("substituteJavaSuperField.kt")
@@ -26160,6 +26216,11 @@ public class BlackBoxCodegenTestGenerated extends AbstractBlackBoxCodegenTest {
             @TestMetadata("nonConstantEnum.kt")
             public void testNonConstantEnum() throws Exception {
                 runTest("compiler/testData/codegen/box/when/enumOptimization/nonConstantEnum.kt");
+            }
+
+            @TestMetadata("nullIsTheFirstEntry.kt")
+            public void testNullIsTheFirstEntry() throws Exception {
+                runTest("compiler/testData/codegen/box/when/enumOptimization/nullIsTheFirstEntry.kt");
             }
 
             @TestMetadata("nullability.kt")

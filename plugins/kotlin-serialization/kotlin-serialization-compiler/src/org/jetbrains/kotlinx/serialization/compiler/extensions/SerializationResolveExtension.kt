@@ -37,13 +37,13 @@ import java.util.*
 open class SerializationResolveExtension : SyntheticResolveExtension {
     override fun getSyntheticNestedClassNames(thisDescriptor: ClassDescriptor): List<Name> = when {
         thisDescriptor.annotations.hasAnnotation(serialInfoFqName) && thisDescriptor.platform?.isJvm() == true -> listOf(SerialEntityNames.IMPL_NAME)
-        thisDescriptor.isInternalSerializable && !thisDescriptor.hasCompanionObjectAsSerializer ->
+        (thisDescriptor.shouldHaveGeneratedSerializer) && !thisDescriptor.hasCompanionObjectAsSerializer ->
             listOf(SerialEntityNames.SERIALIZER_CLASS_NAME)
         else -> listOf()
     }
 
     override fun getSyntheticFunctionNames(thisDescriptor: ClassDescriptor): List<Name> = when {
-        thisDescriptor.isCompanionObject && getSerializableClassDescriptorByCompanion(thisDescriptor) != null ->
+        thisDescriptor.isSerializableObject || thisDescriptor.isCompanionObject && getSerializableClassDescriptorByCompanion(thisDescriptor) != null ->
             listOf(SerialEntityNames.SERIALIZER_PROVIDER_NAME)
         else -> emptyList()
     }
@@ -57,7 +57,7 @@ open class SerializationResolveExtension : SyntheticResolveExtension {
     ) {
         if (thisDescriptor.annotations.hasAnnotation(serialInfoFqName) && name == SerialEntityNames.IMPL_NAME)
             result.add(KSerializerDescriptorResolver.addSerialInfoImplClass(thisDescriptor, declarationProvider, ctx))
-        else if (thisDescriptor.isInternalSerializable && name == SerialEntityNames.SERIALIZER_CLASS_NAME &&
+        else if (thisDescriptor.shouldHaveGeneratedSerializer && name == SerialEntityNames.SERIALIZER_CLASS_NAME &&
             result.none { it.name == SerialEntityNames.SERIALIZER_CLASS_NAME }
         )
             result.add(KSerializerDescriptorResolver.addSerializerImplClass(thisDescriptor, declarationProvider, ctx))
@@ -65,7 +65,8 @@ open class SerializationResolveExtension : SyntheticResolveExtension {
     }
 
     override fun getSyntheticCompanionObjectNameIfNeeded(thisDescriptor: ClassDescriptor): Name? =
-        if (thisDescriptor.shouldHaveGeneratedMethodsInCompanion) SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT
+        if (thisDescriptor.shouldHaveGeneratedMethodsInCompanion && !thisDescriptor.isSerializableObject)
+            SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT
         else null
 
     override fun addSyntheticSupertypes(thisDescriptor: ClassDescriptor, supertypes: MutableList<KotlinType>) {

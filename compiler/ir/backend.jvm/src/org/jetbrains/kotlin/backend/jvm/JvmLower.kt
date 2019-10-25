@@ -131,8 +131,8 @@ internal val localDeclarationsPhase = makeIrFilePhase<CommonBackendContext>(
     prerequisite = setOf(callableReferencePhase, sharedVariablesPhase)
 )
 
-private val defaultArgumentStubPhase = makeIrFilePhase<CommonBackendContext>(
-    { context -> DefaultArgumentStubGenerator(context, false) },
+private val defaultArgumentStubPhase = makeIrFilePhase(
+    ::JvmDefaultArgumentStubGenerator,
     name = "DefaultArgumentsStubGenerator",
     description = "Generate synthetic stubs for functions with default parameter values",
     prerequisite = setOf(localDeclarationsPhase)
@@ -173,8 +173,15 @@ private val syntheticAccessorPhase = makeIrFilePhase(
     prerequisite = setOf(objectClassPhase, staticDefaultFunctionPhase, interfacePhase)
 )
 
+private val mainMethodGenerationPhase = makeIrFilePhase(
+    ::MainMethodGenerationLowering,
+    name = "MainMethodGeneration",
+    description = "Identify parameterless main methods and generate bridge main-methods"
+)
+
 @Suppress("Reformat")
 private val jvmFilePhases =
+        mainMethodGenerationPhase then
         typeAliasAnnotationMethodsPhase then
         stripTypeAliasDeclarationsPhase then
         provisionalFunctionExpressionPhase then
@@ -194,9 +201,7 @@ private val jvmFilePhases =
         propertiesPhase then
         renameFieldsPhase then
         anonymousObjectSuperConstructorPhase then
-        assertionPhase then
         tailrecPhase then
-        returnableBlocksPhase then
 
         jvmInlineClassPhase then
 
@@ -209,10 +214,9 @@ private val jvmFilePhases =
 
         callableReferencePhase then
         singleAbstractMethodPhase then
+        assertionPhase then
+        returnableBlocksPhase then
         localDeclarationsPhase then
-
-        addContinuationPhase then
-                linkLogicalRulesPhase then
 
         jvmOverloadsAnnotationPhase then
         jvmDefaultConstructorPhase then
@@ -229,6 +233,9 @@ private val jvmFilePhases =
         interfaceDelegationPhase then
         interfaceSuperCallsPhase then
         interfaceDefaultCallsPhase then
+
+        addContinuationPhase then
+        linkLogicalRulesPhase then
 
         innerClassesPhase then
         innerClassConstructorCallsPhase then

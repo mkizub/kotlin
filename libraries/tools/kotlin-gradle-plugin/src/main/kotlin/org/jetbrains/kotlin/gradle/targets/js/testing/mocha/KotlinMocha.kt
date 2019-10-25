@@ -31,9 +31,11 @@ class KotlinMocha(override val compilation: KotlinJsCompilation) : KotlinJsTestF
     override val requiredNpmDependencies: Collection<RequiredKotlinJsDependency>
         get() = listOf(
             KotlinGradleNpmPackage("test-js-runner"),
-            versions.mocha,
-            versions.mochaTeamCityReporter
+            versions.mocha
         )
+
+    // https://mochajs.org/#-timeout-ms-t-ms
+    var timeout: String = DEFAULT_TIMEOUT
 
     override fun createTestExecutionSpec(
         task: KotlinJsTest,
@@ -66,8 +68,9 @@ class KotlinMocha(override val compilation: KotlinJsCompilation) : KotlinJsTestF
                 nodeModules.map {
                     npmProject.require(it)
                 } + cliArgs.toList() +
-                listOf("--reporter", "mocha-teamcity-reporter") +
-                listOf(
+                cliArg("--reporter", "kotlin-test-js-runner/mocha-kotlin-reporter.js") +
+                cliArg("--timeout", timeout) +
+                cliArg(
                     "-r", "kotlin-test-js-runner/kotlin-nodejs-source-map-support.js"
                 )
 
@@ -77,6 +80,10 @@ class KotlinMocha(override val compilation: KotlinJsCompilation) : KotlinJsTestF
             false,
             clientSettings
         )
+    }
+
+    private fun cliArg(cli: String, value: String?): List<String> {
+        return value?.let { listOf(cli, it) } ?: emptyList()
     }
 
     private fun createAdapterJs(task: KotlinJsTest) {
@@ -90,11 +97,13 @@ class KotlinMocha(override val compilation: KotlinJsCompilation) : KotlinJsTestF
             val adapter = npmProject.require("kotlin-test-js-runner/kotlin-test-nodejs-runner.js")
             writer.println("require(${adapter.jsQuoted()})")
 
-            writer.println("require(${file.jsQuoted()})")
+            writer.println("module.exports = require(${file.jsQuoted()})")
         }
     }
 
     companion object {
         const val ADAPTER_NODEJS = "adapter-nodejs.js"
+
+        private const val DEFAULT_TIMEOUT = "2s"
     }
 }
