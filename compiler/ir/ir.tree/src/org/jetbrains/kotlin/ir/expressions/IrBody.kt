@@ -33,6 +33,20 @@ interface IrExpressionBody : IrBody {
 
 interface IrBlockBody : IrBody, IrStatementContainer
 
+interface IrRuleBody : IrBody {
+    var expression: IrRuleExpression?
+
+    // max backtrace stack depth
+    var depth: Int
+    // total states in state machine ('base' in rule expressions)
+    var states: Int
+    // total expressions in in state machine
+    var nodes: Int
+
+    override fun <D> transform(transformer: IrElementTransformer<D>, data: D): IrRuleBody =
+        accept(transformer, data) as IrRuleBody
+}
+
 interface IrSyntheticBody : IrBody {
     val kind: IrSyntheticBodyKind
 }

@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
@@ -140,6 +141,8 @@ class OperatorExpressionGenerator(statementGenerator: StatementGenerator) : Stat
             in IDENTITY_OPERATORS -> generateIdentityOperator(expression, irOperator)
             in IN_OPERATORS -> generateInOperator(expression, irOperator)
             in BINARY_BOOLEAN_OPERATORS -> generateBinaryBooleanOperator(expression, irOperator)
+            IrStatementOrigin.RULE_UNIFY -> generateIsTheOperator(expression)
+            IrStatementOrigin.RULE_BROWSE -> generateIsOneOfOperator(expression)
             else -> createErrorExpression(expression, ktOperator.toString())
         }
     }
@@ -226,6 +229,20 @@ class OperatorExpressionGenerator(statementGenerator: StatementGenerator) : Stat
                 irGet(temporary.type, temporary.symbol)
             )
         }
+    }
+
+    private fun generateIsTheOperator(expression: KtBinaryExpression): IrExpression {
+        val resultType = context.irBuiltIns.booleanType
+        val irArgument0 = expression.left!!.genExpr()
+        val irArgument1 = expression.right!!.genExpr()
+        return IrRuleIsTheImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irArgument0.assertCast(), irArgument1)
+    }
+
+    private fun generateIsOneOfOperator(expression: KtBinaryExpression): IrExpression {
+        val resultType = context.irBuiltIns.booleanType
+        val irArgument0 = expression.left!!.genExpr()
+        val irArgument1 = expression.right!!.genExpr()
+        return IrRuleIsOneOfImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irArgument0.assertCast(), irArgument1)
     }
 
     private fun generateBinaryBooleanOperator(ktExpression: KtBinaryExpression, irOperator: IrStatementOrigin): IrExpression {

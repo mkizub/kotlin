@@ -54,6 +54,12 @@ public class IrCfgTestCaseGenerated extends AbstractIrCfgTestCase {
         runTest("compiler/testData/ir/irCfg/simpleFun.kt");
     }
 
+    @TestMetadata("simpleRule.kt")
+    public void testSimpleRule() throws Exception {
+
+        runTest("compiler/testData/ir/irCfg/simpleRule.kt");
+    }
+
     @TestMetadata("simpleReturn.kt")
     public void testSimpleReturn() throws Exception {
         runTest("compiler/testData/ir/irCfg/simpleReturn.kt");
@@ -122,6 +128,34 @@ public class IrCfgTestCaseGenerated extends AbstractIrCfgTestCase {
         @TestMetadata("whenReturn.kt")
         public void testWhenReturn() throws Exception {
             runTest("compiler/testData/ir/irCfg/when/whenReturn.kt");
+        }
+    }
+
+    @TestMetadata("compiler/testData/ir/irCfg/rule")
+    @TestDataPath("$PROJECT_ROOT")
+    @RunWith(JUnit3RunnerWithInners.class)
+    public static class Rule extends AbstractIrCfgTestCase {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+        }
+
+        public void testAllFilesPresentInRule() throws Exception {
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irCfg/rule"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+        }
+
+        @TestMetadata("exprAnd.kt")
+        public void testExprAnd() throws Exception {
+            runTest("compiler/testData/ir/irCfg/rule/exprAnd.kt");
+        }
+
+        @TestMetadata("exprOr.kt")
+        public void testExprOr() throws Exception {
+            runTest("compiler/testData/ir/irCfg/rule/exprOr.kt");
+        }
+
+        @TestMetadata("exprCut.kt")
+        public void testExprCut() throws Exception {
+            runTest("compiler/testData/ir/irCfg/rule/exprCut.kt");
         }
     }
 }

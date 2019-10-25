@@ -79,6 +79,7 @@
         <option value="kotlin-stdlib-common" />
         <option value="kotlin-stdlib-js" />
         <option value="kotlin-test-common" />
+        <option value="kotlin.kotlin-stdlib-common" />
       </set>
     </option>
   </component>

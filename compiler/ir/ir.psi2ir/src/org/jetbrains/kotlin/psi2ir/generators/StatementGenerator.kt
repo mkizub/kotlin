@@ -47,7 +47,7 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
-class StatementGenerator(
+open class StatementGenerator(
     val bodyGenerator: BodyGenerator,
     override val scope: Scope
 ) : KtVisitor<IrStatement, Nothing?>(),
@@ -162,7 +162,10 @@ class StatementGenerator(
         if (isBlockBody) throw AssertionError("Use IrBlockBody and corresponding body generator to generate blocks as function bodies")
 
         val returnType = getInferredTypeWithImplicitCasts(expression) ?: context.builtIns.unitType
-        val irBlock = IrBlockImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType.toIrType())
+        val irBlock = if (expression.isCommaExpression)
+            IrCompositeImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType.toIrType())
+        else
+            IrBlockImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType.toIrType())
 
         expression.statements.forEach {
             irBlock.statements.add(it.genStmt())

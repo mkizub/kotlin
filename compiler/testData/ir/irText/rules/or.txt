@@ -1,0 +1,15 @@
+FILE fqName:<root> fileName:/or.kt
+  FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+    RULE_BODY max backtrack stack depth 1 total states 1 for 5 nodes
+      RULE_OR
+        RULE_LEAF   :1      depth 0   ^goto:2^  =>yield>
+          CONST Boolean type=kotlin.Boolean value=true
+        RULE_LEAF   :2      depth 0   ^goto:3^  =>yield>
+          CONST Boolean type=kotlin.Boolean value=false
+        RULE_AND
+          RULE_WHILE  :3      depth 0   ^fail^  =>goto:4>
+            CONST Boolean type=kotlin.Boolean value=false
+          RULE_LEAF   :4      depth 1   ^fail^  =>goto:5>
+            CONST Boolean type=kotlin.Boolean value=true
+          RULE_LEAF   :5      depth 1   ^fail^  =>yield>
+            CONST Boolean type=kotlin.Boolean value=false

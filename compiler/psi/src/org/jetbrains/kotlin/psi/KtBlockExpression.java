@@ -29,6 +29,7 @@ import com.intellij.util.IncorrectOperationException;
 import kotlin.annotations.jvm.ReadOnly;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.KtNodeTypes;
 import org.jetbrains.kotlin.idea.KotlinLanguage;
 import org.jetbrains.kotlin.lexer.KtTokens;
 import org.jetbrains.kotlin.psi.psiUtil.KtPsiUtilKt;
@@ -42,8 +43,15 @@ import static org.jetbrains.kotlin.KtNodeTypes.BLOCK;
 
 public class KtBlockExpression extends LazyParseablePsiElement implements KtElement, KtExpression, KtStatementExpression, PsiModifiableCodeBlock {
 
+    private final boolean isComma;
+
     public KtBlockExpression(@NotNull IElementType type, @Nullable CharSequence text) {
         super(type, text);
+        isComma = (type == KtNodeTypes.COMMA_EXPRESSION);
+    }
+
+    public boolean isCommaExpression() {
+        return isComma;
     }
 
     @Override

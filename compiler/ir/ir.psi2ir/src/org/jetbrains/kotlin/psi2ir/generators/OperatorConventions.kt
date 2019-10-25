@@ -49,6 +49,9 @@ fun getInfixOperator(ktOperator: IElementType): IrStatementOrigin? =
         KtTokens.ANDAND -> IrStatementOrigin.ANDAND
         KtTokens.OROR -> IrStatementOrigin.OROR
         KtTokens.ELVIS -> IrStatementOrigin.ELVIS
+        KtTokens.UNIFY -> IrStatementOrigin.RULE_UNIFY
+        KtTokens.BROWSE -> IrStatementOrigin.RULE_BROWSE
+        KtTokens.BACKTRACK -> IrStatementOrigin.RULE_BACKTRACK
         else -> null
     }
 

@@ -99,6 +99,9 @@ abstract class IrElementTransformerVoid : IrElementTransformer<Nothing?> {
     open fun visitBlockBody(body: IrBlockBody) = visitBody(body)
     final override fun visitBlockBody(body: IrBlockBody, data: Nothing?) = visitBlockBody(body)
 
+    open fun visitRuleBody(body: IrRuleBody) = visitBody(body)
+    final override fun visitRuleBody(body: IrRuleBody, data: Nothing?) = visitRuleBody(body)
+
     open fun visitSyntheticBody(body: IrSyntheticBody) = visitBody(body)
     final override fun visitSyntheticBody(body: IrSyntheticBody, data: Nothing?) = visitSyntheticBody(body)
 
@@ -272,6 +275,30 @@ abstract class IrElementTransformerVoid : IrElementTransformer<Nothing?> {
 
     open fun visitErrorCallExpression(expression: IrErrorCallExpression) = visitErrorExpression(expression)
     final override fun visitErrorCallExpression(expression: IrErrorCallExpression, data: Nothing?) = visitErrorCallExpression(expression)
+
+    open fun visitRuleExpression(expression: IrRuleExpression) = visitExpression(expression)
+    final override fun visitRuleExpression(expression: IrRuleExpression, data: Nothing?) = visitRuleExpression(expression)
+
+    open fun visitRuleAndExpression(expression: IrRuleAnd) = visitRuleExpression(expression)
+    final override fun visitRuleAndExpression(expression: IrRuleAnd, data: Nothing?) = visitRuleAndExpression(expression)
+
+    open fun visitRuleOrExpression(expression: IrRuleOr) = visitRuleExpression(expression)
+    final override fun visitRuleOrExpression(expression: IrRuleOr, data: Nothing?) = visitRuleOrExpression(expression)
+
+    open fun visitRuleLeafExpression(expression: IrRuleLeaf) = visitRuleExpression(expression)
+    final override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: Nothing?) = visitRuleLeafExpression(expression)
+
+    open fun visitRuleWhileExpression(expression: IrRuleWhile) = visitRuleExpression(expression)
+    final override fun visitRuleWhileExpression(expression: IrRuleWhile, data: Nothing?) = visitRuleWhileExpression(expression)
+
+    open fun visitRuleCutExpression(expression: IrRuleCut) = visitRuleExpression(expression)
+    final override fun visitRuleCutExpression(expression: IrRuleCut, data: Nothing?) = visitRuleCutExpression(expression)
+
+    open fun visitRuleIsThe(expression: IrRuleIsThe) = visitRuleExpression(expression)
+    final override fun visitRuleIsThe(expression: IrRuleIsThe, data: Nothing?) = visitRuleIsThe(expression)
+
+    open fun visitRuleIsOneOf(expression: IrRuleIsOneOf) = visitRuleExpression(expression)
+    final override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: Nothing?) = visitRuleIsOneOf(expression)
 
     protected inline fun <T : IrElement> T.transformPostfix(body: T.() -> Unit): T {
         transformChildrenVoid()

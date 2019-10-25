@@ -46,6 +46,7 @@ interface IrElementVisitor<out R, in D> {
     fun visitBody(body: IrBody, data: D) = visitElement(body, data)
     fun visitExpressionBody(body: IrExpressionBody, data: D) = visitBody(body, data)
     fun visitBlockBody(body: IrBlockBody, data: D) = visitBody(body, data)
+    fun visitRuleBody(body: IrRuleBody, data: D) = visitBody(body, data)
     fun visitSyntheticBody(body: IrSyntheticBody, data: D) = visitBody(body, data)
 
     fun visitSuspendableExpression(expression: IrSuspendableExpression, data: D) = visitExpression(expression, data)
@@ -117,4 +118,13 @@ interface IrElementVisitor<out R, in D> {
     fun visitErrorDeclaration(declaration: IrErrorDeclaration, data: D) = visitDeclaration(declaration, data)
     fun visitErrorExpression(expression: IrErrorExpression, data: D) = visitExpression(expression, data)
     fun visitErrorCallExpression(expression: IrErrorCallExpression, data: D) = visitErrorExpression(expression, data)
+
+    fun visitRuleExpression(expression: IrRuleExpression, data: D) = visitExpression(expression, data)
+    fun visitRuleAndExpression(expression: IrRuleAnd, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleOrExpression(expression: IrRuleOr, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleLeafExpression(expression: IrRuleLeaf, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleWhileExpression(expression: IrRuleWhile, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleCutExpression(expression: IrRuleCut, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleIsThe(expression: IrRuleIsThe, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: D) = visitRuleExpression(expression, data)
 }

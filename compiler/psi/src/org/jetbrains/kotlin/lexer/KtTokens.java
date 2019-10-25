@@ -131,6 +131,9 @@ public interface KtTokens {
     KtKeywordToken NOT_IS      = KtKeywordToken.keyword("NOT_IS", "!is");
     KtSingleValueToken HASH        = new KtSingleValueToken("HASH", "#");
     KtSingleValueToken AT          = new KtSingleValueToken("AT", "@");
+    KtSingleValueToken UNIFY       = new KtSingleValueToken("UNIFY", "?=");
+    KtSingleValueToken BROWSE      = new KtSingleValueToken("BROWSE", "@=");
+    KtSingleValueToken BACKTRACK   = new KtSingleValueToken("BACKTRACK", "?<");
 
     KtSingleValueToken COMMA       = new KtSingleValueToken("COMMA", ",");
 
@@ -257,7 +260,7 @@ public interface KtTokens {
     TokenSet OPERATIONS = TokenSet.create(AS_KEYWORD, AS_SAFE, IS_KEYWORD, IN_KEYWORD, DOT, PLUSPLUS, MINUSMINUS, EXCLEXCL, MUL, PLUS,
                                           MINUS, EXCL, DIV, PERC, LT, GT, LTEQ, GTEQ, EQEQEQ, EXCLEQEQEQ, EQEQ, EXCLEQ, ANDAND, OROR,
                                           SAFE_ACCESS, ELVIS,
-                                          RANGE, EQ, MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ,
+                                          RANGE, EQ, MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ, UNIFY, BROWSE, BACKTRACK,
                                           NOT_IN, NOT_IS,
                                           IDENTIFIER);
 

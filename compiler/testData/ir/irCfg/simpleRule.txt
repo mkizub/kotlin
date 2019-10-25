@@ -1,0 +1,12 @@
+// FILE: /simpleRule.kt
+// FUN: foo
+BB 0
+CONTENT
+      1 FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+OUTGOING -> NONE
+    Function exit: FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+
+// END FUN: foo
+
+// END FILE: /simpleRule.kt
+

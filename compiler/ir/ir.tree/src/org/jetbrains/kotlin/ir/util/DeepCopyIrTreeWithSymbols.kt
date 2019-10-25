@@ -378,6 +378,12 @@ open class DeepCopyIrTreeWithSymbols(
             body.statements.map { it.transform() }
         )
 
+    override fun visitRuleBody(body: IrRuleBody): IrRuleBody =
+        IrRuleBodyImpl(
+            body.startOffset, body.endOffset,
+            body.expression?.transform()
+        ).linkLogicalRules()
+
     override fun visitSyntheticBody(body: IrSyntheticBody): IrSyntheticBody =
         IrSyntheticBodyImpl(body.startOffset, body.endOffset, body.kind)
 
@@ -789,4 +795,59 @@ open class DeepCopyIrTreeWithSymbols(
             explicitReceiver = expression.explicitReceiver?.transform()
             expression.arguments.transformTo(arguments)
         }.copyAttributes(expression)
+
+
+    override fun visitRuleAndExpression(expression: IrRuleAnd): IrRuleAnd =
+        IrRuleAndImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType()
+        ).apply {
+            expression.rules.transformTo(rules)
+        }.copyAttributes(expression)
+
+    override fun visitRuleOrExpression(expression: IrRuleOr): IrRuleOrImpl =
+        IrRuleOrImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType()
+        ).apply {
+            expression.rules.transformTo(rules)
+        }.copyAttributes(expression)
+
+    override fun visitRuleLeafExpression(expression: IrRuleLeaf): IrRuleLeafImpl =
+        IrRuleLeafImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.expr?.transform(),
+            expression.btrk?.transform()
+        ).copyAttributes(expression)
+
+    override fun visitRuleWhileExpression(expression: IrRuleWhile): IrRuleWhileImpl =
+        IrRuleWhileImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.cond?.transform()
+        ).copyAttributes(expression)
+
+    override fun visitRuleCutExpression(expression: IrRuleCut): IrRuleCutImpl =
+        IrRuleCutImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType()
+        ).copyAttributes(expression)
+
+    override fun visitRuleIsThe(expression: IrRuleIsThe): IrRuleIsTheImpl =
+        IrRuleIsTheImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.target.transform(),
+            expression.value.transform()
+        ).copyAttributes(expression)
+
+    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf): IrRuleIsOneOfImpl =
+        IrRuleIsOneOfImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.target.transform(),
+            expression.value.transform()
+        ).copyAttributes(expression)
+
 }

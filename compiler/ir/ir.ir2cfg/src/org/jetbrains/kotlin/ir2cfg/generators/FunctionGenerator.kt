@@ -61,6 +61,10 @@ class FunctionGenerator(val function: IrFunction) {
             return body.process()
         }
 
+        override fun visitRuleBody(body: IrRuleBody, data: Boolean): IrStatement? {
+            return body.process()
+        }
+
         override fun visitContainerExpression(expression: IrContainerExpression, data: Boolean): IrStatement? {
             return expression.process() ?: expression
         }

@@ -33,6 +33,9 @@ object OperatorNameConventions {
     @JvmField val NEXT = Name.identifier("next")
     @JvmField val HAS_NEXT = Name.identifier("hasNext")
 
+    @JvmField val UNIFY = Name.identifier("unify")
+    @JvmField val BROWSE = Name.identifier("browse")
+
     @JvmField val COMPONENT_REGEX = Regex("component\\d+")
 
     @JvmField val AND = Name.identifier("and")

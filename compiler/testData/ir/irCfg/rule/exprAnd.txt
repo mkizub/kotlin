@@ -1,0 +1,12 @@
+// FILE: /exprAnd.kt
+// FUN: foo
+BB 0
+CONTENT
+      1 FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+      2 ? IrRuleAndImpl type=kotlin.Unit
+OUTGOING -> NONE
+    Function exit: FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+
+// END FUN: foo
+
+// END FILE: /exprAnd.kt

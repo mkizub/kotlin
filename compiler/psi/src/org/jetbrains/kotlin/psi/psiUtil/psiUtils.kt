@@ -443,6 +443,8 @@ fun KtModifierList.hasExpectModifier() = hasModifier(KtTokens.HEADER_KEYWORD) ||
 
 fun KtModifierListOwner.hasActualModifier() = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
 fun KtModifierList.hasActualModifier() = hasModifier(KtTokens.IMPL_KEYWORD) || hasModifier(KtTokens.ACTUAL_KEYWORD)
+fun KtModifierListOwner.hasRuleModifier() = hasModifier(KtTokens.RULE_KEYWORD)
+fun KtModifierList.hasRuleModifier() = hasModifier(KtTokens.RULE_KEYWORD)
 fun KtModifierList.hasSuspendModifier() = hasModifier(KtTokens.SUSPEND_KEYWORD)
 
 fun ASTNode.children() = generateSequence(firstChildNode) { node -> node.treeNext }

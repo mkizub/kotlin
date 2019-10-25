@@ -370,6 +370,7 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
             "tailrec".takeIf { isTailrec },
             "inline".takeIf { isInline },
             "external".takeIf { isExternal },
+            "rule".takeIf { isRule },
             "suspend".takeIf { isSuspend },
             "expect".takeIf { isExpect }
         )
@@ -522,6 +523,9 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
 
     override fun visitBlockBody(body: IrBlockBody, data: Nothing?): String =
         "BLOCK_BODY"
+
+    override fun visitRuleBody(body: IrRuleBody, data: Nothing?): String =
+        "RULE_BODY max backtrack stack depth ${body.depth} total states ${body.states} for ${body.nodes} nodes"
 
     override fun visitSyntheticBody(body: IrSyntheticBody, data: Nothing?): String =
         "SYNTHETIC_BODY kind=${body.kind}"
@@ -685,6 +689,62 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
 
     override fun visitErrorCallExpression(expression: IrErrorCallExpression, data: Nothing?): String =
         "ERROR_CALL '${expression.description}' type=${expression.type.render()}"
+
+    override fun visitRuleExpression(expression: IrRuleExpression, data: Nothing?): String =
+        "RULE_EXPR ?"
+
+    override fun visitRuleAndExpression(expression: IrRuleAnd, data: Nothing?): String =
+        "RULE_AND"
+
+    override fun visitRuleOrExpression(expression: IrRuleOr, data: Nothing?): String =
+        "RULE_OR"
+
+    private fun StringBuilder.appendRuleExpr(prefix: String, expression: IrRuleExpression) {
+        append(prefix)
+        append(":${expression.idx}")
+        if (expression.base > 0)
+            append("/${expression.base}")
+        while (length < 20)
+            append(" ")
+        append("depth ${expression.depth} ")
+        appendRuleLinks(expression.link)
+    }
+
+    private fun StringBuilder.appendRuleLinks(link: IrRuleExpression.LinkData?) {
+        if (link == null)
+            return
+        append(" ")
+        if (link.back != null) {
+            if (link.jumpBack)
+                append(" ^goto:${link.back.idx}^ ")
+            else if (link.back.base > 0)
+                append(" ^case:${link.back.base}^ ")
+            else
+                append(" ^fail^ ")
+        } else {
+            append(" ^fail^ ")
+        }
+        if (link.next != null) {
+            append(" =>goto:${link.next.idx}> ")
+        } else {
+            append(" =>yield> ")
+        }
+    }
+
+    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_LEAF   ", expression) }
+
+    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_WHILE  ", expression) }
+
+    override fun visitRuleCutExpression(expression: IrRuleCut, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_CUT    ", expression) }
+
+    override fun visitRuleIsThe(expression: IrRuleIsThe, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_IS_THE ", expression) }
+
+    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_ONE_OF ", expression) }
 
     private val descriptorRendererForErrorDeclarations = DescriptorRenderer.ONLY_NAMES_WITH_SHORT_TYPES
 }

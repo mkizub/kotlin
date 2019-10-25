@@ -38,6 +38,7 @@ import static org.jetbrains.kotlin.resolve.descriptorUtil.DescriptorUtilsKt.getB
 public class DescriptorUtils {
     public static final Name ENUM_VALUES = Name.identifier("values");
     public static final Name ENUM_VALUE_OF = Name.identifier("valueOf");
+    public static final FqName LOGICAL_RULES_PACKAGE_FQ_NAME = new FqName("kotlin.logical");
     public static final FqName COROUTINES_PACKAGE_FQ_NAME_RELEASE = new FqName("kotlin.coroutines");
     public static final FqName COROUTINES_PACKAGE_FQ_NAME_EXPERIMENTAL =
             COROUTINES_PACKAGE_FQ_NAME_RELEASE.child(Name.identifier("experimental"));

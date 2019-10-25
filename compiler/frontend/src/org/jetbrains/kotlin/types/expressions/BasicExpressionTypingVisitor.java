@@ -1092,6 +1092,15 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
             ValueArgument leftArgument = CallMaker.makeValueArgument(left, left != null ? left : operationSign);
             result = checkInExpression(expression, operationSign, leftArgument, right, context);
         }
+        else if (operationType == UNIFY) {
+            result = checkIsTheExpression(expression, operationSign, left, right, context);
+        }
+        else if (operationType == BROWSE) {
+            result = checkIsOneOfExpression(expression, operationSign, left, right, context);
+        }
+        else if (operationType == BACKTRACK) {
+            result = visitBacktrack(expression, operationSign, left, right, context);
+        }
         else if (OperatorConventions.BOOLEAN_OPERATIONS.containsKey(operationType)) {
             result = visitBooleanOperationExpression(operationType, left, right, context);
         }
@@ -1410,6 +1419,104 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
         else {
             return rightTypeInfo.clearType();
         }
+    }
+
+    @NotNull
+    public KotlinTypeInfo checkIsTheExpression(
+            @NotNull KtBinaryExpression expression,
+            @NotNull KtSimpleNameExpression operationSign,
+            @Nullable KtExpression left,
+            @Nullable KtExpression right,
+            @NotNull ExpressionTypingContext context
+    ) {
+        if (right == null || left == null) {
+            ExpressionTypingUtils.getTypeInfoOrNullType(right, context, facade);
+            ExpressionTypingUtils.getTypeInfoOrNullType(left, context, facade);
+            return TypeInfoFactoryKt.createTypeInfo(components.builtIns.getBooleanType(), context);
+        }
+
+        KotlinTypeInfo leftTypeInfo = getTypeInfoOrNullType(left, context, facade);
+
+        DataFlowInfo dataFlowInfo = leftTypeInfo.getDataFlowInfo();
+        ExpressionTypingContext contextWithDataFlow = context.replaceDataFlowInfo(dataFlowInfo);
+
+        ExpressionReceiver receiver = createReceiverForEquals(left, contextWithDataFlow);
+        OverloadResolutionResults<FunctionDescriptor> resolutionResult = components.callResolver.resolveCallWithGivenName(
+                contextWithDataFlow,
+                CallMaker.makeCallWithExpressions(expression, receiver, null, operationSign, Collections.singletonList(right)),
+                operationSign,
+                OperatorNameConventions.UNIFY);
+        KotlinType containsType = OverloadResolutionResultsUtil.getResultingType(resolutionResult, context);
+        ensureBooleanResult(operationSign, OperatorNameConventions.UNIFY, containsType, context);
+
+        KotlinTypeInfo rightTypeInfo = facade.getTypeInfo(right, contextWithDataFlow);
+        if (resolutionResult.isSuccess())
+            return rightTypeInfo.replaceType(components.builtIns.getBooleanType());
+        else
+            return rightTypeInfo.clearType();
+    }
+
+    @NotNull
+    public KotlinTypeInfo checkIsOneOfExpression(
+            @NotNull KtBinaryExpression expression,
+            @NotNull KtSimpleNameExpression operationSign,
+            @Nullable KtExpression left,
+            @Nullable KtExpression right,
+            @NotNull ExpressionTypingContext context
+    ) {
+        if (right == null || left == null) {
+            ExpressionTypingUtils.getTypeInfoOrNullType(right, context, facade);
+            ExpressionTypingUtils.getTypeInfoOrNullType(left, context, facade);
+            return TypeInfoFactoryKt.createTypeInfo(components.builtIns.getBooleanType(), context);
+        }
+
+        KotlinTypeInfo leftTypeInfo = getTypeInfoOrNullType(left, context, facade);
+
+        DataFlowInfo dataFlowInfo = leftTypeInfo.getDataFlowInfo();
+        ExpressionTypingContext contextWithDataFlow = context.replaceDataFlowInfo(dataFlowInfo);
+
+        ExpressionReceiver receiver = createReceiverForEquals(left, contextWithDataFlow);
+        Collection<FunctionDescriptor> equalsFunctions = findEqualsWithNullableAnyParameter(receiver, expression);
+
+        Call call = CallMaker.makeCallWithExpressions(
+                expression,
+                receiver,
+                null,
+                operationSign,
+                Collections.singletonList(right)
+        );
+
+        OverloadResolutionResults<FunctionDescriptor> resolutionResults =
+                components.callResolver.resolveEqualsCallWithGivenDescriptors(contextWithDataFlow, operationSign, receiver, call, equalsFunctions);
+
+        if (resolutionResults.isSuccess()) {
+            FunctionDescriptor equals = resolutionResults.getResultingCall().getResultingDescriptor();
+            ensureBooleanResult(operationSign, OperatorNameConventions.BROWSE, equals.getReturnType(), contextWithDataFlow);
+        }
+        else {
+            if (resolutionResults.isAmbiguity()) {
+                context.trace.report(OVERLOAD_RESOLUTION_AMBIGUITY.on(operationSign, resolutionResults.getResultingCalls()));
+            }
+            else {
+                context.trace.report(EQUALS_MISSING.on(operationSign));
+            }
+        }
+        KotlinTypeInfo rightTypeInfo = facade.getTypeInfo(right, contextWithDataFlow);
+        return rightTypeInfo.replaceType(components.builtIns.getBooleanType());
+    }
+
+    @NotNull
+    private KotlinTypeInfo visitBacktrack(
+            @NotNull KtBinaryExpression expression,
+            @NotNull KtSimpleNameExpression operationSign,
+            @Nullable KtExpression left,
+            @Nullable KtExpression right,
+            @NotNull ExpressionTypingContext context
+    ) {
+        KotlinType unitType = components.builtIns.getUnitType();
+        KotlinTypeInfo leftTypeInfo = getTypeInfoOrNullType(left, context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE), facade);
+        KotlinTypeInfo rightTypeInfo = getTypeInfoOrNullType(right, context.replaceExpectedType(TypeUtils.NO_EXPECTED_TYPE), facade);
+        return leftTypeInfo.replaceType(unitType);
     }
 
 

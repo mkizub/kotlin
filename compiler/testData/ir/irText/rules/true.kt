@@ -1,0 +1,3 @@
+rule fun foo() {
+    true
+}

@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.util.declareSimpleFunctionWithOverrides
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.hasRuleModifier
 import org.jetbrains.kotlin.psi.psiUtil.pureEndOffset
 import org.jetbrains.kotlin.psi.psiUtil.pureStartOffset
 import org.jetbrains.kotlin.psi2ir.isConstructorDelegatingToSuper
@@ -49,7 +50,12 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
             IrDeclarationOrigin.DEFINED,
             getOrFail(BindingContext.FUNCTION, ktFunction)
         ) {
-            ktFunction.bodyExpression?.let { generateFunctionBody(it) }
+            ktFunction.bodyExpression?.let {
+                if (ktFunction.hasRuleModifier())
+                    generateRuleBody(it)
+                else
+                    generateFunctionBody(it)
+            }
         }
 
     fun generateLambdaFunctionDeclaration(ktFunction: KtFunctionLiteral): IrSimpleFunction =

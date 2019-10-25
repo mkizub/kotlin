@@ -62,6 +62,25 @@ class BodyGenerator(
         return irBlockBody
     }
 
+    fun generateRuleBody(ktBody: KtExpression): IrRuleBody {
+        val ruleGenerator = RuleGenerator(this, scope)
+
+        val irRuleBody = IrRuleBodyImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset)
+        if (ktBody is KtBlockExpression) {
+            val irRuleContainer = if (ktBody.isCommaExpression)
+                IrRuleAndImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset, context.irBuiltIns.unitType)
+            else
+                IrRuleOrImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset, context.irBuiltIns.unitType)
+            ruleGenerator.generateRuleExpressions(ktBody.statements, irRuleContainer)
+            irRuleBody.expression = irRuleContainer
+        } else {
+            irRuleBody.expression = ruleGenerator.generateRuleExpression(ktBody)
+        }
+        irRuleBody.linkLogicalRules()
+
+        return irRuleBody
+    }
+
     fun generateExpressionBody(ktExpression: KtExpression): IrExpressionBody =
         IrExpressionBodyImpl(createStatementGenerator().generateExpression(ktExpression))
 

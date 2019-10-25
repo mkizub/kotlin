@@ -1,0 +1,6 @@
+FILE fqName:<root> fileName:/true.kt
+  FUN name:foo visibility:public modality:FINAL <> () returnType:kotlin.Unit [rule]
+    RULE_BODY max backtrack stack depth 0 total states 0 for 1 nodes
+      RULE_OR
+        RULE_LEAF   :1      depth 0   ^fail^  =>yield>
+          CONST Boolean type=kotlin.Boolean value=true

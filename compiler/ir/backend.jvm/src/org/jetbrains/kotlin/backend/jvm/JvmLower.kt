@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm
 
 import org.jetbrains.kotlin.backend.common.CommonBackendContext
+import org.jetbrains.kotlin.backend.common.linkLogicalRulesPhase
 import org.jetbrains.kotlin.backend.common.lower.*
 import org.jetbrains.kotlin.backend.common.lower.loops.forLoopsPhase
 import org.jetbrains.kotlin.backend.common.phaser.*
@@ -211,6 +212,7 @@ private val jvmFilePhases =
         localDeclarationsPhase then
 
         addContinuationPhase then
+                linkLogicalRulesPhase then
 
         jvmOverloadsAnnotationPhase then
         jvmDefaultConstructorPhase then
