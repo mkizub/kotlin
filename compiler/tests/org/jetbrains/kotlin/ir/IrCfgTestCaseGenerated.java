@@ -135,11 +135,11 @@ public class IrCfgTestCaseGenerated extends AbstractIrCfgTestCase {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Rule extends AbstractIrCfgTestCase {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInRule() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irCfg/rule"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irCfg/rule"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("exprAnd.kt")

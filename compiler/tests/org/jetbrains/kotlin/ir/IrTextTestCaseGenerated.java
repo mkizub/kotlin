@@ -1532,11 +1532,11 @@ public class IrTextTestCaseGenerated extends AbstractIrTextTestCase {
     @RunWith(JUnit3RunnerWithInners.class)
     public static class Rules extends AbstractIrTextTestCase {
         private void runTest(String testDataFilePath) throws Exception {
-            KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
         }
 
         public void testAllFilesPresentInRules() throws Exception {
-            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irText/rules"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irText/rules"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
         @TestMetadata("true.kt")
