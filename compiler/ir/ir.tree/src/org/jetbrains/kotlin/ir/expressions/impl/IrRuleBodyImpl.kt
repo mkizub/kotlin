@@ -56,7 +56,7 @@ fun IrRuleBody.linkLogicalRules(): IrRuleBody {
 private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
     private var blockDepth = 0
     private var stateDepth = 0
-    private var blockStates = 0
+    private var blockStates = 1
     private var totalNodes = 0
 
     fun allocNewState(n: Int = 1): Int {
@@ -87,7 +87,7 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
     override fun visitRuleBody(body: IrRuleBody, data: IrRuleExpression.LinkData) {
         blockDepth = 0
         stateDepth = 0
-        blockStates = 0
+        blockStates = 1
         totalNodes = 0
         body.acceptChildren(this, IrRuleExpression.LinkData(null, null, false))
         body.depth = blockDepth

@@ -22500,6 +22500,49 @@ public class IrBlackBoxCodegenTestGenerated extends AbstractIrBlackBoxCodegenTes
         }
     }
 
+    @TestMetadata("compiler/testData/codegen/box/rules")
+    @TestDataPath("$PROJECT_ROOT")
+    @RunWith(JUnit3RunnerWithInners.class)
+    public static class Rules extends AbstractIrBlackBoxCodegenTest {
+        private void runTest(String testDataFilePath) throws Exception {
+            KotlinTestUtils.runTest(this::doTest, TargetBackend.JVM_IR, testDataFilePath);
+        }
+
+        public void testAllFilesPresentInRules() throws Exception {
+            KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/rules"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM_IR, true);
+        }
+
+        @TestMetadata("cut.kt")
+        public void testCut() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/cut.kt");
+        }
+
+        @TestMetadata("empty.kt")
+        public void testEmpty() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/empty.kt");
+        }
+
+        @TestMetadata("false.kt")
+        public void testFalse() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/false.kt");
+        }
+
+        @TestMetadata("leaf.kt")
+        public void testLeaf() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/leaf.kt");
+        }
+
+        @TestMetadata("true.kt")
+        public void testTrue() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/true.kt");
+        }
+
+        @TestMetadata("while.kt")
+        public void testWhile() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/while.kt");
+        }
+    }
+
     @TestMetadata("compiler/testData/codegen/box/safeCall")
     @TestDataPath("$PROJECT_ROOT")
     @RunWith(JUnit3RunnerWithInners.class)

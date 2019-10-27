@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
+import org.jetbrains.kotlin.psi.stubs.elements.KtConstantExpressionElementType
 import org.jetbrains.kotlin.psi2ir.deparenthesize
 
 class RuleGenerator(
@@ -111,14 +112,17 @@ class RuleGenerator(
         return irRuleExpr
     }
 
+    private fun isCutBaseExpr(expr: KtExpression?): Boolean =
+        expr == null || KtPsiUtil.isBooleanConstant(expr);
+
     override fun visitPrefixExpression(expression: KtPrefixExpression, data: Nothing?): IrStatement {
-        if (expression.operationToken == KtTokens.EXCLEXCL && expression.baseExpression == null)
+        if (expression.operationToken == KtTokens.EXCLEXCL && isCutBaseExpr(expression.baseExpression))
             return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
         if (expression.operationToken == KtTokens.EXCL) {
             val base = expression.baseExpression
             if (base == null)
                 return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
-            else if (base is KtPrefixExpression && base.operationToken == KtTokens.EXCL && base.baseExpression == null)
+            else if (base is KtPrefixExpression && base.operationToken == KtTokens.EXCL && isCutBaseExpr(base.baseExpression))
                 return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
         }
         return super.visitPrefixExpression(expression, data)

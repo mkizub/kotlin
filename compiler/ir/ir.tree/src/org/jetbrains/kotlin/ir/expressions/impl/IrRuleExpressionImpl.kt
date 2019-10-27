@@ -21,7 +21,7 @@ abstract class IrRuleExpressionBase(
 ) : IrExpressionBase(startOffset, endOffset, type),
     IrRuleExpression {
 
-    override var depth: Int = 0
+    override var depth: Int = -1
     override var base: Int = 0
     override var idx: Int = 0
     override var link: LinkData? = null

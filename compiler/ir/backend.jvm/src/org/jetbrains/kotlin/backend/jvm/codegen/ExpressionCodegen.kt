@@ -54,6 +54,7 @@ import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 import java.util.*
+import kotlin.collections.ArrayList
 
 sealed class ExpressionInfo
 
@@ -134,6 +135,8 @@ class ExpressionCodegen(
 
     val IrValueDeclaration.asmType: Type
         get() = type.asmType
+
+    var logicalData: LogicalCodegenData? = null
 
     // Assume this expression's result has already been materialized on the stack
     // with the correct type.
@@ -314,6 +317,42 @@ class ExpressionCodegen(
 
     override fun visitBlockBody(body: IrBlockBody, data: BlockInfo) =
         visitStatementContainer(body, data).discard()
+
+    override fun visitRuleBody(body: IrRuleBody, data: BlockInfo): PromisedValue {
+        generateStateMachineForRule(body, data)
+        return immaterialUnitValue
+    }
+
+    override fun visitRuleAndExpression(expression: IrRuleAnd, data: BlockInfo): PromisedValue {
+        expression.rules.forEach {
+            it.accept(this, data).discard()
+        }
+        return immaterialUnitValue
+    }
+
+    override fun visitRuleOrExpression(expression: IrRuleOr, data: BlockInfo): PromisedValue {
+        expression.rules.forEach {
+            it.accept(this, data).discard()
+        }
+        return immaterialUnitValue
+    }
+
+    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: BlockInfo): PromisedValue =
+        generateRuleLeafExpression(expression, data)
+
+    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: BlockInfo): PromisedValue =
+        generateRuleWhileExpression(expression, data)
+
+    override fun visitRuleCutExpression(expression: IrRuleCut, data: BlockInfo): PromisedValue =
+        generateRuleCutExpression(expression, data)
+
+//    override fun visitRuleIsThe(expression: IrRuleIsThe, data: BlockInfo): PromisedValue {
+//        return super.visitRuleIsThe(expression, data)
+//    }
+//
+//    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: BlockInfo): PromisedValue {
+//        return super.visitRuleIsOneOf(expression, data)
+//    }
 
     override fun visitContainerExpression(expression: IrContainerExpression, data: BlockInfo) =
         visitStatementContainer(expression, data).coerce(expression.type)

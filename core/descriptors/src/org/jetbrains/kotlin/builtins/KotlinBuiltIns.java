@@ -47,6 +47,7 @@ public abstract class KotlinBuiltIns {
     public static final FqName COLLECTIONS_PACKAGE_FQ_NAME = BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("collections"));
     public static final FqName RANGES_PACKAGE_FQ_NAME = BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("ranges"));
     public static final FqName TEXT_PACKAGE_FQ_NAME = BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("text"));
+    public static final FqName LOGICAL_PACKAGE_FQ_NAME = BUILT_INS_PACKAGE_FQ_NAME.child(Name.identifier("logical"));
 
     public static final Set<FqName> BUILT_INS_PACKAGE_FQ_NAMES = setOf(
             BUILT_INS_PACKAGE_FQ_NAME,
@@ -242,6 +243,8 @@ public abstract class KotlinBuiltIns {
         public final FqName mutableMap = collectionsFqName("MutableMap");
         public final FqName mutableMapEntry = mutableMap.child(Name.identifier("MutableEntry"));
 
+        public final FqName logicalRule = logicalName("Rule");
+
         public final FqNameUnsafe kClass = reflect("KClass");
         public final FqNameUnsafe kCallable = reflect("KCallable");
         public final FqNameUnsafe kProperty0 = reflect("KProperty0");
@@ -305,6 +308,11 @@ public abstract class KotlinBuiltIns {
         @NotNull
         private static FqName annotationName(@NotNull String simpleName) {
             return ANNOTATION_PACKAGE_FQ_NAME.child(Name.identifier(simpleName));
+        }
+
+        @NotNull
+        private static FqName logicalName(@NotNull String simpleName) {
+            return LOGICAL_PACKAGE_FQ_NAME.child(Name.identifier(simpleName));
         }
     }
 
@@ -620,6 +628,11 @@ public abstract class KotlinBuiltIns {
     @NotNull
     public ClassDescriptor getMutableListIterator() {
         return getBuiltInClassByFqName(FQ_NAMES.mutableListIterator);
+    }
+
+    @NotNull
+    public ClassDescriptor getLogicalRule() {
+        return getBuiltInClassByFqName(FQ_NAMES.logicalRule);
     }
 
     @NotNull

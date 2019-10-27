@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.forEachDescendantOfType
+import org.jetbrains.kotlin.psi.psiUtil.hasRuleModifier
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingContext.*
 import org.jetbrains.kotlin.resolve.BindingTrace
@@ -241,6 +242,8 @@ class ControlFlowInformationProvider private constructor(
             ?: throw AssertionError("checkDefiniteReturn is called for ${subroutine.text} which is not KtDeclarationWithBody")
 
         if (!function.hasBody()) return
+
+        if (function.hasRuleModifier()) return
 
         val (returnedExpressions, hasReturnsInInlinedLambdas) = collectReturnExpressions()
 

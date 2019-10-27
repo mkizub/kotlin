@@ -1539,11 +1539,6 @@ public class IrTextTestCaseGenerated extends AbstractIrTextTestCase {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/ir/irText/rules"), Pattern.compile("^(.+)\\.kt$"), true);
         }
 
-        @TestMetadata("true.kt")
-        public void testTrue() throws Exception {
-            runTest("compiler/testData/ir/irText/rules/true.kt");
-        }
-
         @TestMetadata("and.kt")
         public void testAnd() throws Exception {
             runTest("compiler/testData/ir/irText/rules/and.kt");
@@ -1552,6 +1547,11 @@ public class IrTextTestCaseGenerated extends AbstractIrTextTestCase {
         @TestMetadata("or.kt")
         public void testOr() throws Exception {
             runTest("compiler/testData/ir/irText/rules/or.kt");
+        }
+
+        @TestMetadata("true.kt")
+        public void testTrue() throws Exception {
+            runTest("compiler/testData/ir/irText/rules/true.kt");
         }
     }
 

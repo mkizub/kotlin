@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.ir.expressions
 
 import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
 interface IrBody : IrElement {
@@ -33,7 +34,7 @@ interface IrExpressionBody : IrBody {
 
 interface IrBlockBody : IrBody, IrStatementContainer
 
-interface IrRuleBody : IrBody {
+interface IrRuleBody : IrBody, IrStatement {
     var expression: IrRuleExpression?
 
     // max backtrace stack depth
