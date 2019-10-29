@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.ir.expressions
 
+import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
+
 interface IrRuleExpression : IrExpression {
     class LinkData(
         // next rule to check
@@ -39,13 +41,14 @@ interface IrRuleAnd : IrRuleExpression, IrRuleContainer {
 }
 
 interface IrRuleIsThe : IrRuleExpression {
-    val target: IrGetValue
-    val value: IrExpression
+    val access: IrDeclarationReference
+    val unify: IrExpression
 }
 
 interface IrRuleIsOneOf : IrRuleExpression {
-    val target: IrGetValue
-    val value: IrExpression
+    val access: IrDeclarationReference
+    val browse: IrExpression
+    var iterator: IrFieldSymbol?
 }
 
 interface IrRuleLeaf : IrRuleExpression {

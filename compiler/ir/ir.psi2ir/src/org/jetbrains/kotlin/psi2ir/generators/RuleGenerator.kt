@@ -8,16 +8,14 @@ package org.jetbrains.kotlin.psi2ir.generators
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.builders.Scope
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrRuleContainer
-import org.jetbrains.kotlin.ir.expressions.IrRuleExpression
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
-import org.jetbrains.kotlin.psi.stubs.elements.KtConstantExpressionElementType
 import org.jetbrains.kotlin.psi2ir.deparenthesize
+import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 
 class RuleGenerator(
     bodyGenerator: BodyGenerator,
@@ -127,4 +125,36 @@ class RuleGenerator(
         }
         return super.visitPrefixExpression(expression, data)
     }
+}
+
+class RuleExpressionGenerator(statementGenerator: StatementGenerator): StatementGeneratorExtension(statementGenerator) {
+
+    private fun generateCall(
+        resolvedCall: ResolvedCall<*>,
+        ktExpression: KtExpression,
+        origin: IrStatementOrigin?
+    ) =
+        CallGenerator(statementGenerator).generateCall(ktExpression, statementGenerator.pregenerateCall(resolvedCall), origin)
+
+    fun generateRuleIsThe(expression: KtBinaryExpression): IrRuleIsThe {
+        expression.left ?: throw AssertionError("Logical variable should be present:\n${expression.text}")
+        val irGetVar = expression.left!!.genExpr() as IrDeclarationReference
+        val unifyCall = getResolvedCall(expression)
+            ?: throw AssertionError("No resolved call for unification operator ${expression.text}")
+        val irUnifyCall = generateCall(unifyCall, expression, IrStatementOrigin.RULE_UNIFY)
+        val resultType = context.irBuiltIns.unitType
+        return IrRuleIsTheImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irGetVar, irUnifyCall)
+    }
+
+    fun generateRuleIsOneOf(expression: KtBinaryExpression): IrRuleIsOneOf {
+        expression.left ?: throw AssertionError("Logical variable should be present:\n${expression.text}")
+        val irGetVar = expression.left!!.genExpr() as IrDeclarationReference
+        expression.right ?: throw AssertionError("Container for values should be present:\n${expression.text}")
+        val browseCall = getResolvedCall(expression)
+            ?: throw AssertionError("No resolved call for browse operator ${expression.text}")
+        val irBrowseCall = generateCall(browseCall, expression, IrStatementOrigin.RULE_BROWSE)
+        val resultType = context.irBuiltIns.unitType
+        return IrRuleIsOneOfImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irGetVar, irBrowseCall, null)
+    }
+
 }

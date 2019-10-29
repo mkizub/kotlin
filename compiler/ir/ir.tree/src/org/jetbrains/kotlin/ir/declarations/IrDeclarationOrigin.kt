@@ -47,6 +47,9 @@ interface IrDeclarationOrigin {
     object FIELD_FOR_ENUM_VALUES : IrDeclarationOriginImpl("FIELD_FOR_ENUM_VALUES")
     object FIELD_FOR_OBJECT_INSTANCE : IrDeclarationOriginImpl("FIELD_FOR_OBJECT_INSTANCE")
 
+    object LOGICAL_RULES_CLASS : IrDeclarationOriginImpl("LOGICAL_RULES_CLASS")
+    object LOGICAL_RULES_BODY : IrDeclarationOriginImpl("LOGICAL_RULES_BODY")
+
     val isSynthetic: Boolean get() = false
 }
 

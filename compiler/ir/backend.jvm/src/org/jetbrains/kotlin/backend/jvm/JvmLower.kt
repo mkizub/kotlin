@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm
 
 import org.jetbrains.kotlin.backend.common.CommonBackendContext
-import org.jetbrains.kotlin.backend.jvm.lower.linkLogicalRulesPhase
+import org.jetbrains.kotlin.backend.jvm.lower.logicalRulesPhase
 import org.jetbrains.kotlin.backend.common.lower.*
 import org.jetbrains.kotlin.backend.common.lower.loops.forLoopsPhase
 import org.jetbrains.kotlin.backend.common.phaser.*
@@ -212,6 +212,7 @@ private val jvmFilePhases =
         enumWhenPhase then
         singletonReferencesPhase then
 
+        logicalRulesPhase then
         callableReferencePhase then
         singleAbstractMethodPhase then
         assertionPhase then
@@ -235,7 +236,6 @@ private val jvmFilePhases =
         interfaceDefaultCallsPhase then
 
         addContinuationPhase then
-        linkLogicalRulesPhase then
 
         innerClassesPhase then
         innerClassConstructorCallsPhase then

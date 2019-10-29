@@ -156,10 +156,46 @@ class LocalDeclarationsLowering(
 
     }
 
+    private class LogicalRuleContext(irRuleBody: IrRuleBody, val outerContext: LocalContext?) : LocalContext() {
+        // parameters or original rule function are mapped onto fields of frame class
+        val capturedValueToField: MutableMap<IrValueParameter, IrField> = mutableMapOf()
+        // frame parameter to access fields
+        val frameParameter: IrValueParameter
+        // original rule declaration
+        val origFunction: IrFunction
+
+        init {
+            origFunction = irRuleBody.originalFunctionSymbol.owner
+            val bodyFunction = irRuleBody.stateMachineFunctionSymbol!!.owner
+            val frameClass = irRuleBody.frameClassSymbol!!.owner
+
+            frameParameter = bodyFunction.valueParameters.find {
+                it.name.asString() == "frame\$\$"
+            }!!
+            origFunction.valueParameters.forEach { param ->
+                val field = frameClass.declarations.find { it is IrField && it.name == param.name }
+                if (field is IrField)
+                    capturedValueToField[param] = field
+            }
+        }
+
+        override fun irGet(startOffset: Int, endOffset: Int, valueDeclaration: IrValueDeclaration): IrExpression? {
+            val field = capturedValueToField[valueDeclaration]
+            if (field != null) {
+                return IrGetFieldImpl(
+                    startOffset, endOffset, field.symbol, field.type,
+                    receiver = IrGetValueImpl(startOffset, endOffset, frameParameter.type, frameParameter.symbol)
+                )
+            }
+            return outerContext?.irGet(startOffset, endOffset, valueDeclaration)
+        }
+    }
+
     private inner class LocalDeclarationsTransformer(val irFile: IrFile) {
         val localFunctions: MutableMap<IrFunction, LocalFunctionContext> = LinkedHashMap()
         val localClasses: MutableMap<IrClass, LocalClassContext> = LinkedHashMap()
         val localClassConstructors: MutableMap<IrConstructor, LocalClassConstructorContext> = LinkedHashMap()
+        val ruleBodies: MutableMap<IrRuleBody, LogicalRuleContext> = LinkedHashMap()
 
         val transformedDeclarations = mutableMapOf<IrSymbolOwner, IrDeclaration>()
 
@@ -172,7 +208,7 @@ class LocalDeclarationsLowering(
 
         fun lowerLocalDeclarations() {
             collectLocalDeclarations()
-            if (localFunctions.isEmpty() && localClasses.isEmpty()) return
+            if (localFunctions.isEmpty() && localClasses.isEmpty() && ruleBodies.isEmpty()) return
 
             collectClosureForLocalDeclarations()
 
@@ -239,6 +275,19 @@ class LocalDeclarationsLowering(
                     }
                     acceptChildren(SetDeclarationsParentVisitor, this)
                 } ?: super.visitConstructor(declaration)
+            }
+
+            override fun visitRuleBody(body: IrRuleBody): IrBody {
+                val bodyFunction = body.stateMachineFunctionSymbol?.owner
+                val frameClass = body.frameClassSymbol?.owner
+                return if (frameClass != null && bodyFunction != null) {
+                    body.apply {
+                        val logicalRuleContext = LogicalRuleContext(body, localContext)
+                        transformChildrenVoid(FunctionBodiesRewriter(logicalRuleContext))
+                    }
+                } else {
+                    super.visitRuleBody(body)
+                }
             }
 
             override fun visitGetValue(expression: IrGetValue): IrExpression {
@@ -773,6 +822,13 @@ class LocalDeclarationsLowering(
 
                     val localClassContext = LocalClassContext(declaration, inInlineFunctionScope)
                     localClasses[declaration] = localClassContext
+                }
+
+                override fun visitRuleBody(body: IrRuleBody, data: Nothing?) {
+                    super.visitRuleBody(body, data)
+
+                    val ruleBodyContext = LogicalRuleContext(body, null)
+                    ruleBodies[body] = ruleBodyContext
                 }
 
                 private val inInlineFunctionScope: Boolean

@@ -20,13 +20,13 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.ir.IrStatement
-import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.impl.originalKotlinType
 import org.jetbrains.kotlin.ir.types.makeNotNull
+import org.jetbrains.kotlin.ir.util.irCall
 import org.jetbrains.kotlin.ir.util.referenceFunction
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
@@ -231,19 +231,11 @@ class OperatorExpressionGenerator(statementGenerator: StatementGenerator) : Stat
         }
     }
 
-    private fun generateIsTheOperator(expression: KtBinaryExpression): IrExpression {
-        val resultType = context.irBuiltIns.booleanType
-        val irArgument0 = expression.left!!.genExpr()
-        val irArgument1 = expression.right!!.genExpr()
-        return IrRuleIsTheImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irArgument0.assertCast(), irArgument1)
-    }
+    private fun generateIsTheOperator(expression: KtBinaryExpression): IrExpression =
+        RuleExpressionGenerator(statementGenerator).generateRuleIsThe(expression)
 
-    private fun generateIsOneOfOperator(expression: KtBinaryExpression): IrExpression {
-        val resultType = context.irBuiltIns.booleanType
-        val irArgument0 = expression.left!!.genExpr()
-        val irArgument1 = expression.right!!.genExpr()
-        return IrRuleIsOneOfImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irArgument0.assertCast(), irArgument1)
-    }
+    private fun generateIsOneOfOperator(expression: KtBinaryExpression): IrExpression =
+        RuleExpressionGenerator(statementGenerator).generateRuleIsOneOf(expression)
 
     private fun generateBinaryBooleanOperator(ktExpression: KtBinaryExpression, irOperator: IrStatementOrigin): IrExpression {
         if (isDynamicBinaryOperator(ktExpression)) return generateDynamicBinaryExpression(ktExpression)

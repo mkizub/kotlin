@@ -1476,33 +1476,23 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
         ExpressionTypingContext contextWithDataFlow = context.replaceDataFlowInfo(dataFlowInfo);
 
         ExpressionReceiver receiver = createReceiverForEquals(left, contextWithDataFlow);
-        Collection<FunctionDescriptor> equalsFunctions = findEqualsWithNullableAnyParameter(receiver, expression);
-
-        Call call = CallMaker.makeCallWithExpressions(
-                expression,
-                receiver,
-                null,
+        OverloadResolutionResults<FunctionDescriptor> resolutionResult = components.callResolver.resolveCallWithGivenName(
+                contextWithDataFlow,
+                CallMaker.makeCallWithExpressions(expression, receiver, null, operationSign, Collections.singletonList(right)),
                 operationSign,
-                Collections.singletonList(right)
-        );
+                OperatorNameConventions.BROWSE);
 
-        OverloadResolutionResults<FunctionDescriptor> resolutionResults =
-                components.callResolver.resolveEqualsCallWithGivenDescriptors(contextWithDataFlow, operationSign, receiver, call, equalsFunctions);
+        KotlinType browseType = OverloadResolutionResultsUtil.getResultingType(resolutionResult, context);
+        if (!KotlinBuiltIns.isIteratorOrNullableIterator(browseType)) {
+            context.trace.report(RESULT_TYPE_MISMATCH.on(operationSign, "'" + OperatorNameConventions.BROWSE + "'",
+                                                         components.builtIns.getIterator().getDefaultType(), browseType));
+        }
 
-        if (resolutionResults.isSuccess()) {
-            FunctionDescriptor equals = resolutionResults.getResultingCall().getResultingDescriptor();
-            ensureBooleanResult(operationSign, OperatorNameConventions.BROWSE, equals.getReturnType(), contextWithDataFlow);
-        }
-        else {
-            if (resolutionResults.isAmbiguity()) {
-                context.trace.report(OVERLOAD_RESOLUTION_AMBIGUITY.on(operationSign, resolutionResults.getResultingCalls()));
-            }
-            else {
-                context.trace.report(EQUALS_MISSING.on(operationSign));
-            }
-        }
         KotlinTypeInfo rightTypeInfo = facade.getTypeInfo(right, contextWithDataFlow);
-        return rightTypeInfo.replaceType(components.builtIns.getBooleanType());
+        if (resolutionResult.isSuccess())
+            return rightTypeInfo.replaceType(components.builtIns.getBooleanType());
+        else
+            return rightTypeInfo.clearType();
     }
 
     @NotNull

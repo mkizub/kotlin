@@ -11,8 +11,10 @@ package kotlin
 
 @Suppress("unused")
 class PVar<A>(var value: A? = null) {
-    val bound: Boolean
-        get() = (value != null)
+
+    fun bound(): Boolean {
+        return value != null
+    }
 
     fun bind(v: A) {
         value = v
@@ -31,21 +33,22 @@ class PVar<A>(var value: A? = null) {
         }
     }
 
-    fun reunify(v: A): Boolean {
-        value = null
-        value = v
-        return true
-    }
-
-    fun browse(iterator: Iterator<A>): Boolean {
-        for (v in iterator) {
-            if (value == null || value == v)
-                return true
+    fun browse(iterator: Iterator<A>): Iterator<A>? {
+        if (value == null) {
+            if (!iterator.hasNext())
+                return null
+            value = iterator.next()
+            return iterator
+        } else {
+            for (v in iterator) {
+                if (value == v)
+                    return iterator
+            }
+            return null
         }
-        return false
     }
 
-    fun browse(iterable: Iterable<A>): Boolean {
+    fun browse(iterable: Iterable<A>): Iterator<A>? {
         return browse(iterable.iterator())
     }
 

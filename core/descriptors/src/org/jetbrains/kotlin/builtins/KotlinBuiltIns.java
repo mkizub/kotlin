@@ -243,6 +243,7 @@ public abstract class KotlinBuiltIns {
         public final FqName mutableMap = collectionsFqName("MutableMap");
         public final FqName mutableMapEntry = mutableMap.child(Name.identifier("MutableEntry"));
 
+        public final FqName logicalPVar = logicalName("PVar");
         public final FqName logicalRule = logicalName("Rule");
 
         public final FqNameUnsafe kClass = reflect("KClass");
@@ -628,6 +629,11 @@ public abstract class KotlinBuiltIns {
     @NotNull
     public ClassDescriptor getMutableListIterator() {
         return getBuiltInClassByFqName(FQ_NAMES.mutableListIterator);
+    }
+
+    @NotNull
+    public ClassDescriptor getLogicalPVar() {
+        return getBuiltInClassByFqName(FQ_NAMES.logicalPVar);
     }
 
     @NotNull
@@ -1091,6 +1097,10 @@ public abstract class KotlinBuiltIns {
 
     public static boolean isIterableOrNullableIterable(@NotNull KotlinType type) {
         return isConstructedFromGivenClass(type, FQ_NAMES.iterable);
+    }
+
+    public static boolean isIteratorOrNullableIterator(@NotNull KotlinType type) {
+        return isConstructedFromGivenClass(type, FQ_NAMES.iterator);
     }
 
     public static boolean isThrowableOrNullableThrowable(@NotNull KotlinType type) {

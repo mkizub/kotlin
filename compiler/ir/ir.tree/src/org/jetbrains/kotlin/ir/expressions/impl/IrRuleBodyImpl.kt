@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.ir.expressions.impl
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrElementBase
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import kotlin.contracts.ExperimentalContracts
@@ -15,19 +17,17 @@ import kotlin.contracts.contract
 
 class IrRuleBodyImpl(
     startOffset: Int,
-    endOffset: Int
+    endOffset: Int,
+    override val originalFunctionSymbol: IrSimpleFunctionSymbol,
+    override var expression: IrRuleExpression?
 ) :
     IrElementBase(startOffset, endOffset),
     IrRuleBody
 {
-
-    constructor(startOffset: Int, endOffset: Int, expression: IrRuleExpression?) : this(startOffset, endOffset) {
-        this.expression = expression
-    }
-
-    constructor(expression: IrRuleExpression) : this(expression.startOffset, expression.endOffset, expression)
-
-    override var expression: IrRuleExpression? = null
+    // function with generated state machine
+    override var stateMachineFunctionSymbol: IrSimpleFunctionSymbol? = null
+    // concrete frame class generated for this state machine
+    override var frameClassSymbol: IrClassSymbol? = null
 
     // max backtrace stack depth
     override var depth: Int = 0
@@ -176,7 +176,7 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         val expr = expression as IrRuleIsOneOfImpl
         expr.link = data
         expr.idx = ++totalNodes
-        expr.base = allocNewState(2)
+        expr.base = allocNewState()
         expr.depth = pushDepth()
     }
 }

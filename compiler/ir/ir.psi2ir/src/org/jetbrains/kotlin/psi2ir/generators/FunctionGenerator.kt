@@ -52,7 +52,7 @@ class FunctionGenerator(declarationGenerator: DeclarationGenerator) : Declaratio
         ) {
             ktFunction.bodyExpression?.let {
                 if (ktFunction.hasRuleModifier())
-                    generateRuleBody(it)
+                    generateRuleBody(scopeOwnerSymbol, it)
                 else
                     generateFunctionBody(it)
             }

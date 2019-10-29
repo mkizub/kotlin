@@ -381,8 +381,12 @@ open class DeepCopyIrTreeWithSymbols(
     override fun visitRuleBody(body: IrRuleBody): IrRuleBody =
         IrRuleBodyImpl(
             body.startOffset, body.endOffset,
+            body.originalFunctionSymbol,
             body.expression?.transform()
-        ).linkLogicalRules()
+        ).apply {
+            stateMachineFunctionSymbol = body.stateMachineFunctionSymbol
+            frameClassSymbol = body.frameClassSymbol
+        }.linkLogicalRules()
 
     override fun visitSyntheticBody(body: IrSyntheticBody): IrSyntheticBody =
         IrSyntheticBodyImpl(body.startOffset, body.endOffset, body.kind)
@@ -838,16 +842,17 @@ open class DeepCopyIrTreeWithSymbols(
         IrRuleIsTheImpl(
             expression.startOffset, expression.endOffset,
             expression.type.remapType(),
-            expression.target.transform(),
-            expression.value.transform()
+            expression.access.transform(),
+            expression.unify.transform()
         ).copyAttributes(expression)
 
     override fun visitRuleIsOneOf(expression: IrRuleIsOneOf): IrRuleIsOneOfImpl =
         IrRuleIsOneOfImpl(
             expression.startOffset, expression.endOffset,
             expression.type.remapType(),
-            expression.target.transform(),
-            expression.value.transform()
+            expression.access.transform(),
+            expression.browse.transform(),
+            expression.iterator
         ).copyAttributes(expression)
 
 }

@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.ir.expressions.impl
 import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.IrRuleExpression.LinkData
+import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.transform
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
@@ -158,8 +159,8 @@ class IrRuleIsTheImpl(
     startOffset: Int,
     endOffset: Int,
     type: IrType,
-    override var target: IrGetValue,
-    override var value: IrExpression
+    override var access: IrDeclarationReference,
+    override var unify: IrExpression
 ) : IrRuleExpressionBase(startOffset, endOffset, type),
     IrRuleIsThe {
 
@@ -168,13 +169,13 @@ class IrRuleIsTheImpl(
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
-        target.accept(visitor, data)
-        value.accept(visitor, data)
+        access.accept(visitor, data)
+        unify.accept(visitor, data)
     }
 
     override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
-        target = target.transform(transformer, data).assertCast()
-        value = value.transform(transformer, data)
+        access = access.transform(transformer, data).assertCast()
+        unify = unify.transform(transformer, data).assertCast()
     }
 }
 
@@ -182,8 +183,9 @@ class IrRuleIsOneOfImpl(
     startOffset: Int,
     endOffset: Int,
     type: IrType,
-    override var target: IrGetValue,
-    override var value: IrExpression
+    override var access: IrDeclarationReference,
+    override var browse: IrExpression,
+    override var iterator: IrFieldSymbol?
 ) : IrRuleExpressionBase(startOffset, endOffset, type),
     IrRuleIsOneOf {
 
@@ -192,13 +194,13 @@ class IrRuleIsOneOfImpl(
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
-        target.accept(visitor, data)
-        value.accept(visitor, data)
+        access.accept(visitor, data)
+        browse.accept(visitor, data)
     }
 
     override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
-        target = target.transform(transformer, data).assertCast()
-        value = value.transform(transformer, data)
+        access = access.transform(transformer, data).assertCast()
+        browse = browse.transform(transformer, data)
     }
 }
 

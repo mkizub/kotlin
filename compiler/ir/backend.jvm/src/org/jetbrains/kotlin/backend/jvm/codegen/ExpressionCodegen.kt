@@ -346,13 +346,11 @@ class ExpressionCodegen(
     override fun visitRuleCutExpression(expression: IrRuleCut, data: BlockInfo): PromisedValue =
         generateRuleCutExpression(expression, data)
 
-//    override fun visitRuleIsThe(expression: IrRuleIsThe, data: BlockInfo): PromisedValue {
-//        return super.visitRuleIsThe(expression, data)
-//    }
-//
-//    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: BlockInfo): PromisedValue {
-//        return super.visitRuleIsOneOf(expression, data)
-//    }
+    override fun visitRuleIsThe(expression: IrRuleIsThe, data: BlockInfo): PromisedValue =
+        generateRuleIsThe(expression, data)
+
+    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: BlockInfo): PromisedValue =
+        generateRuleIsOneOf(expression, data)
 
     override fun visitContainerExpression(expression: IrContainerExpression, data: BlockInfo) =
         visitStatementContainer(expression, data).coerce(expression.type)

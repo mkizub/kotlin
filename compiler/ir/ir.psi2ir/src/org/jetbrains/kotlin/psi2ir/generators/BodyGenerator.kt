@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.util.referenceFunction
 import org.jetbrains.kotlin.psi.*
@@ -62,20 +63,25 @@ class BodyGenerator(
         return irBlockBody
     }
 
-    fun generateRuleBody(ktBody: KtExpression): IrRuleBody {
+    fun generateRuleBody(originalFunctionSymbol: IrSymbol, ktBody: KtExpression): IrRuleBody {
         val ruleGenerator = RuleGenerator(this, scope)
 
-        val irRuleBody = IrRuleBodyImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset)
-        if (ktBody is KtBlockExpression) {
+        val expression: IrRuleExpression = if (ktBody is KtBlockExpression) {
             val irRuleContainer = if (ktBody.isCommaExpression)
                 IrRuleAndImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset, context.irBuiltIns.unitType)
             else
                 IrRuleOrImpl(ktBody.startOffsetSkippingComments, ktBody.endOffset, context.irBuiltIns.unitType)
             ruleGenerator.generateRuleExpressions(ktBody.statements, irRuleContainer)
-            irRuleBody.expression = irRuleContainer
+            irRuleContainer
         } else {
-            irRuleBody.expression = ruleGenerator.generateRuleExpression(ktBody)
+            ruleGenerator.generateRuleExpression(ktBody)
         }
+        val irRuleBody = IrRuleBodyImpl(
+            ktBody.startOffsetSkippingComments,
+            ktBody.endOffset,
+            originalFunctionSymbol as IrSimpleFunctionSymbol,
+            expression
+        )
         irRuleBody.linkLogicalRules()
 
         return irRuleBody
@@ -338,7 +344,7 @@ class BodyGenerator(
         }
 
         val enumDefaultConstructorCall = getResolvedCall(ktEnumEntry)
-                ?: throw AssertionError("No default constructor call for enum entry $enumClassDescriptor")
+            ?: throw AssertionError("No default constructor call for enum entry $enumClassDescriptor")
         return statementGenerator.generateEnumConstructorCall(enumDefaultConstructorCall, ktEnumEntry)
     }
 

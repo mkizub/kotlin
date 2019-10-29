@@ -5,15 +5,25 @@
 
 package org.jetbrains.kotlin.backend.jvm.codegen
 
+import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.linkLogicalRules
+import org.jetbrains.kotlin.ir.types.IrSimpleType
+import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
+import org.jetbrains.kotlin.ir.types.isIterator
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
 
 class LogicalCodegenData(
     val env: IrValueParameter, // frame object parameter
-    val btv: VariableInfo, // backtrack variable
+    val btv: VariableInfo, // backtrack variable (bt$)
+    val wbv: VariableInfo, // was bound variable (was$bound)
     val switchLabel: Label,
     val stateLabels: Array<Label>,
     val enterLabels: Array<Label>
@@ -23,10 +33,11 @@ fun ExpressionCodegen.generateStateMachineForRule(body: IrRuleBody, data: BlockI
     body.linkLogicalRules()
     val env = irFunction.valueParameters.find { it.name.identifier == "frame$$" }!!
     val btv = data.variables.find { it.declaration.name.identifier == "bt$" }!!
+    val wbv = data.variables.find { it.declaration.name.identifier == "was\$bound" }!!
     val switchLabel = Label()
     val stateLabels: Array<Label> = (0 until body.states).map { Label() }.toTypedArray()
     val enterLabels: Array<Label> = (0..body.nodes).map { Label() }.toTypedArray()
-    logicalData = LogicalCodegenData(env, btv, switchLabel, stateLabels, enterLabels)
+    logicalData = LogicalCodegenData(env, btv, wbv, switchLabel, stateLabels, enterLabels)
 
     // bt$ = env.bt$
     // if (bt$ < 0) {
@@ -95,11 +106,8 @@ private fun ExpressionCodegen.saveBacktrackState() {
     mv.putfield(ownerType, "bt$", "I")
 }
 
-private fun ExpressionCodegen.getFrameVar() =
-    irFunction.valueParameters.find { it.name.identifier == "frame$$" }
-
 private fun ExpressionCodegen.loadFrameVar(): IrValueParameter {
-    val env = getFrameVar()!!
+    val env = logicalData!!.env
     mv.load(frameMap.getIndex(env.symbol), env.asmType)
     return env
 }
@@ -149,6 +157,7 @@ fun ExpressionCodegen.generateRuleLeafExpression(expression: IrRuleLeaf, data: B
     val expr = expression.expr
     val btrk = expression.btrk
     if (expr != null) {
+        @Suppress("CascadeIf")
         if (expr.type == context.irBuiltIns.booleanType) {
             // if (!expr)
             //   backtrack
@@ -221,6 +230,7 @@ fun ExpressionCodegen.generateRuleWhileExpression(expression: IrRuleWhile, data:
     return immaterialUnitValue
 }
 
+@Suppress("UNUSED_PARAMETER")
 fun ExpressionCodegen.generateRuleCutExpression(expression: IrRuleCut, data: BlockInfo): PromisedValue {
     mv.mark(logicalData!!.enterLabels[expression.idx])
 
@@ -233,3 +243,180 @@ fun ExpressionCodegen.generateRuleCutExpression(expression: IrRuleCut, data: Blo
     return immaterialUnitValue
 }
 
+fun ExpressionCodegen.generateRuleIsThe(expression: IrRuleIsThe, data: BlockInfo): PromisedValue {
+    mv.mark(logicalData!!.enterLabels[expression.idx])
+
+    // was$bound = target.bound()
+    // if (!target.unify(value))
+    //   backtrack
+    // if (was$bound) {
+    //   env.bt$depth = bt$
+    //   bt$ = N
+    // }
+    //   more check
+
+    val access = expression.access
+    val unify = expression.unify
+
+    val unboundLabel = Label()
+    val unifiedLabel = Label()
+
+    access.accept(this, data).materialize()
+    mv.invokevirtual("kotlin/PVar", "bound", "()Z", false)
+    mv.store(logicalData!!.wbv.index, Type.BOOLEAN_TYPE)
+
+    unify.accept(this, data).materialize()
+    mv.ifne(unifiedLabel)
+    createCodeBacktrack(expression, false)
+
+    mv.mark(unifiedLabel)
+    mv.load(logicalData!!.wbv.index, Type.BOOLEAN_TYPE)
+    mv.ifne(unboundLabel)
+
+    saveBacktrackState(expression.depth)
+    mv.iconst(expression.base)
+    mv.store(logicalData!!.btv.index, Type.INT_TYPE)
+
+    mv.mark(unboundLabel)
+    createCodeMoreCheck(expression, true)
+
+    // case N:
+    //  target.unbind()
+    //  backtrack
+    mv.mark(logicalData!!.stateLabels[expression.base])
+
+    access.accept(this, data).materialize()
+    mv.invokevirtual("kotlin/PVar", "unbind", "()V", false)
+    createCodeBacktrack(expression, true)
+
+    return immaterialUnitValue
+}
+
+fun ExpressionCodegen.generateRuleIsOneOf(expression: IrRuleIsOneOf, data: BlockInfo): PromisedValue {
+    mv.mark(logicalData!!.enterLabels[expression.idx])
+
+    // if (target.bound()) {
+    //   if (target.browse(arg) != null)
+    //     more check
+    //   backtrack
+    // }
+    //
+    //   env.iterator$idx = target.browse(arg)
+    //   if (env.iterator$idx == null)
+    //     backtrack
+    //   env.bt$depth = bt$
+    //   bt$ = N
+    //   more check
+    // case N:
+    //   target.unbind()
+    //   if (target.browse(env.iterator$idx) != null)
+    //     more check
+    //   env.iterator$idx = null
+    //   target.unbind()
+    //   backtrack
+
+
+    val access = expression.access
+    val browse = expression.browse as IrCall
+
+    // if (target.bound()) {
+    //   if (target.browse(arg) != null)
+    //     more check
+    //   backtrack
+    // }
+    //
+    run {
+        val unboundLabel = Label()
+        access.accept(this, data).materialize()
+        mv.invokevirtual("kotlin/PVar", "bound", "()Z", false)
+        mv.ifeq(unboundLabel)
+
+        val nullLabel = Label()
+        browse.accept(this, data).materialize()
+        mv.ifnull(nullLabel)
+        createCodeMoreCheck(expression, true)
+        mv.mark(nullLabel)
+        createCodeBacktrack(expression, false)
+        mv.mark(unboundLabel)
+    }
+
+    // env.iterator$idx = target.browse(arg)
+    // if (env.iterator$idx == null)
+    //   backtrack
+    val env = logicalData!!.env
+    run {
+        loadFrameVar()
+        browse.accept(this, data).materialize()
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.iterator!!.owner.type).descriptor
+        mv.putfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        val notnullLabel = Label()
+        loadFrameVar()
+        mv.getfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        mv.ifnonnull(notnullLabel)
+        createCodeBacktrack(expression, false)
+        mv.mark(notnullLabel)
+    }
+    //   env.bt$depth = bt$
+    //   bt$ = N
+    //   more check
+    saveBacktrackState(expression.depth)
+    mv.iconst(expression.base)
+    mv.store(logicalData!!.btv.index, Type.INT_TYPE)
+    createCodeMoreCheck(expression, true)
+
+    // case N:
+    mv.mark(logicalData!!.stateLabels[expression.base])
+    //   target.unbind()
+    access.accept(this, data).materialize()
+    mv.invokevirtual("kotlin/PVar", "unbind", "()V", false)
+    //   if (target.browse(env.iterator$idx) != null)
+    //     more check
+    run {
+        // lookup for browse(iterator)
+        val browse_iter = (browse.symbol.owner.parent as IrClass).declarations.find { decl ->
+            decl is IrFunction && decl.name.toString() == "browse"
+                    && decl.valueParameters.size == 1 && decl.valueParameters[0].type.isIterator()
+        } as IrFunction
+        val browse_type = IrSimpleTypeImpl(
+            null,
+            (browse_iter.returnType as IrSimpleType).classifier,
+            true,
+            listOf(),
+            listOf(),
+            null
+        )
+        val browse_call =
+            IrCallImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, browse_type, browse_iter.symbol, browse_iter.symbol.descriptor, 0, 1)
+        browse_call.putValueArgument(
+            0, IrGetFieldImpl(
+                UNDEFINED_OFFSET, UNDEFINED_OFFSET,
+                expression.iterator!!,
+                browse.type,
+                IrGetValueImpl(UNDEFINED_OFFSET, UNDEFINED_OFFSET, env.symbol)
+            )
+        )
+        browse_call.dispatchReceiver = access
+        val elseLabel = Label()
+        browse_call.accept(this, data).materialize()
+        mv.ifnull(elseLabel)
+        createCodeMoreCheck(expression, true)
+        mv.mark(elseLabel)
+
+    }
+    //   env.iterator$idx = null
+    //   target.unbind()
+    //   backtrack
+    run {
+        loadFrameVar()
+        mv.aconst(null)
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.iterator!!.owner.type).descriptor
+        mv.putfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+    }
+    access.accept(this, data).materialize()
+    mv.invokevirtual("kotlin/PVar", "unbind", "()V", false)
+    createCodeBacktrack(expression, true)
+
+    return immaterialUnitValue
+}
