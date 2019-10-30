@@ -22551,6 +22551,11 @@ public class IrBlackBoxCodegenTestGenerated extends AbstractIrBlackBoxCodegenTes
         public void testWhile() throws Exception {
             runTest("compiler/testData/codegen/box/rules/while.kt");
         }
+
+        @TestMetadata("zoo.kt")
+        public void testZoo() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/zoo.kt");
+        }
     }
 
     @TestMetadata("compiler/testData/codegen/box/safeCall")

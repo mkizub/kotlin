@@ -10,6 +10,8 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.builtins.*
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.descriptors.CallableMemberDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
@@ -172,8 +174,9 @@ internal class FunctionsTypingVisitor(facade: ExpressionTypingInternals) : Expre
         context: ExpressionTypingContext
     ): AnonymousFunctionDescriptor {
         val functionLiteral = expression.functionLiteral
+        val ownerDescriptor = context.scope.ownerDescriptor
         val functionDescriptor = AnonymousFunctionDescriptor(
-            context.scope.ownerDescriptor,
+            ownerDescriptor,
             components.annotationResolver.resolveAnnotationsWithArguments(context.scope, expression.getAnnotationEntries(), context.trace),
             CallableMemberDescriptor.Kind.DECLARATION, functionLiteral.toSourceElement(),
             context.expectedType.isSuspendFunctionType()
@@ -181,9 +184,11 @@ internal class FunctionsTypingVisitor(facade: ExpressionTypingInternals) : Expre
             facade.components.typeResolutionInterceptor.interceptFunctionLiteralDescriptor(expression, context, it)
         }
         components.functionDescriptorResolver.initializeFunctionDescriptorAndExplicitReturnType(
-            context.scope.ownerDescriptor, context.scope, functionLiteral,
+            ownerDescriptor, context.scope, functionLiteral,
             functionDescriptor, context.trace, context.expectedType, context.dataFlowInfo
         )
+        if (ownerDescriptor is FunctionDescriptor && ownerDescriptor.isRule)
+            functionDescriptor.isRule = true
         for (parameterDescriptor in functionDescriptor.valueParameters) {
             ForceResolveUtil.forceResolveAllContents(parameterDescriptor.annotations)
         }

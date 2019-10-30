@@ -113,6 +113,12 @@ private fun ExpressionCodegen.loadFrameVar(): IrValueParameter {
 }
 
 private fun ExpressionCodegen.createCodeBacktrack(expr: IrRuleExpression, load: Boolean) {
+    if (expr.link == null) {
+        // return false
+        mv.iconst(0)
+        mv.areturn(Type.BOOLEAN_TYPE)
+    }
+
     val link = expr.link!!
     val back = link.back
     when {

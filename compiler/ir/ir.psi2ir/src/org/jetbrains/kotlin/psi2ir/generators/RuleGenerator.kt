@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
+import org.jetbrains.kotlin.ir.types.isIterable
+import org.jetbrains.kotlin.ir.types.isLogicalRule
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
@@ -78,7 +80,7 @@ class RuleGenerator(
             return stat
         if (stat is IrVariable)
             return IrRuleVariableImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
-        if (stat is IrCall)
+        if (stat is IrCall && stat.type.isLogicalRule())
             return IrRuleCallImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
         if (stat is IrExpression)
             return IrRuleLeafImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
@@ -100,18 +102,32 @@ class RuleGenerator(
         ktStatements.mapTo(to.rules) { it.genRuleExpr() }
 
     override fun visitBlockExpression(expression: KtBlockExpression, data: Nothing?): IrStatement {
-        val isBlockBody = expression.parent is KtDeclarationWithBody && expression.parent !is KtFunctionLiteral
-        if (isBlockBody) throw AssertionError("Use IrBlockBody and corresponding body generator to generate blocks as function bodies")
-
-        val returnType = context.irBuiltIns.unitType
+        val unitType = context.irBuiltIns.unitType
 
         val irRuleExpr = if (expression.isCommaExpression)
-            IrRuleAndImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType)
+            IrRuleAndImpl(expression.startOffsetSkippingComments, expression.endOffset, unitType)
         else
-            IrRuleOrImpl(expression.startOffsetSkippingComments, expression.endOffset, returnType)
+            IrRuleOrImpl(expression.startOffsetSkippingComments, expression.endOffset, unitType)
 
         expression.statements.forEach {
             irRuleExpr.rules.add(it.genRuleExpr())
+        }
+
+        return irRuleExpr
+    }
+
+    override fun visitLambdaExpression(expression: KtLambdaExpression, data: Nothing?): IrStatement {
+        val unitType = context.irBuiltIns.unitType
+
+        val irRuleExpr = if (expression.bodyExpression?.isCommaExpression != false)
+            IrRuleAndImpl(expression.startOffsetSkippingComments, expression.endOffset, unitType)
+        else
+            IrRuleOrImpl(expression.startOffsetSkippingComments, expression.endOffset, unitType)
+
+        expression.bodyExpression?.let { body ->
+            body.statements.forEach {
+                irRuleExpr.rules.add(it.genRuleExpr())
+            }
         }
 
         return irRuleExpr

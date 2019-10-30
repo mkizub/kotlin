@@ -23677,6 +23677,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
         public void testAllFilesPresentInRules() throws Exception {
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/testData/codegen/box/rules"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.JVM, true);
         }
+
+        @TestMetadata("zoo.kt")
+        public void testZoo() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/zoo.kt");
+        }
     }
 
     @TestMetadata("compiler/testData/codegen/box/safeCall")

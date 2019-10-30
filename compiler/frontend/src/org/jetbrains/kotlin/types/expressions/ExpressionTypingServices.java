@@ -173,8 +173,26 @@ public class ExpressionTypingServices {
     }
 
     @NotNull
-    public KotlinTypeInfo getBlockReturnedType(KtBlockExpression expression, ExpressionTypingContext context, boolean isStatement, boolean isRule) {
-        if (isRule) {
+    public KotlinTypeInfo getBlockReturnedType(KtBlockExpression expression, ExpressionTypingContext context, boolean isStatement) {
+        KotlinTypeInfo typeInfo = getBlockReturnedType(expression, isStatement ? CoercionStrategy.COERCION_TO_UNIT : CoercionStrategy.NO_COERCION, context);
+        return typeInfo;
+    }
+
+    @NotNull
+    public KotlinTypeInfo getBlockReturnedType(
+            @NotNull KtBlockExpression expression,
+            @NotNull CoercionStrategy coercionStrategyForLastExpression,
+            @NotNull ExpressionTypingContext context
+    ) {
+        List<KtExpression> block = StatementFilterKt.filterStatements(statementFilter, expression);
+
+        DeclarationDescriptor containingDescriptor = context.scope.getOwnerDescriptor();
+        TraceBasedLocalRedeclarationChecker redeclarationChecker
+                = new TraceBasedLocalRedeclarationChecker(context.trace, expressionTypingComponents.overloadChecker);
+        LexicalWritableScope scope = new LexicalWritableScope(context.scope, containingDescriptor, false, redeclarationChecker,
+                                                              LexicalScopeKind.CODE_BLOCK);
+
+        if ((containingDescriptor instanceof FunctionDescriptor && ((FunctionDescriptor)containingDescriptor).isRule())) {
             for (KtExpression statement : expression.getStatements()) {
                 if (statement instanceof KtDeclaration)
                     continue;
@@ -192,22 +210,6 @@ public class ExpressionTypingServices {
                 }
             }
         }
-        return getBlockReturnedType(expression, (isStatement || isRule) ? CoercionStrategy.COERCION_TO_UNIT : CoercionStrategy.NO_COERCION, context);
-    }
-
-    @NotNull
-    public KotlinTypeInfo getBlockReturnedType(
-            @NotNull KtBlockExpression expression,
-            @NotNull CoercionStrategy coercionStrategyForLastExpression,
-            @NotNull ExpressionTypingContext context
-    ) {
-        List<KtExpression> block = StatementFilterKt.filterStatements(statementFilter, expression);
-
-        DeclarationDescriptor containingDescriptor = context.scope.getOwnerDescriptor();
-        TraceBasedLocalRedeclarationChecker redeclarationChecker
-                = new TraceBasedLocalRedeclarationChecker(context.trace, expressionTypingComponents.overloadChecker);
-        LexicalWritableScope scope = new LexicalWritableScope(context.scope, containingDescriptor, false, redeclarationChecker,
-                                                              LexicalScopeKind.CODE_BLOCK);
 
         KotlinTypeInfo r;
         if (block.isEmpty()) {

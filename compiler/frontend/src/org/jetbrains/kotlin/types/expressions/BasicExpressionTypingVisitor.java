@@ -661,9 +661,7 @@ public class BasicExpressionTypingVisitor extends ExpressionTypingVisitor {
 
     @Override
     public KotlinTypeInfo visitBlockExpression(@NotNull KtBlockExpression expression, ExpressionTypingContext context) {
-        DeclarationDescriptor dd = context.scope.getOwnerDescriptor();
-        boolean isRule = (dd instanceof FunctionDescriptor && ((FunctionDescriptor)dd).isRule());
-        return components.expressionTypingServices.getBlockReturnedType(expression, context, false, isRule);
+        return components.expressionTypingServices.getBlockReturnedType(expression, context, false);
     }
 
     @Override

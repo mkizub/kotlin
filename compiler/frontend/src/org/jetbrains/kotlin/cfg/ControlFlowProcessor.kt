@@ -1042,6 +1042,10 @@ class ControlFlowProcessor(
                 visitInlinedFunction(function, invocationKind)
             }
 
+            val functionDescriptor = trace.get(BindingContext.FUNCTION, function)
+            val isRuleFunction = functionDescriptor?.isRule ?: false
+            if (isRuleFunction)
+                return
             val isAnonymousFunction = function is KtFunctionLiteral || function.name == null
             if (isAnonymousFunction || function.isLocal && function.parent !is KtBlockExpression) {
                 builder.createLambda(function)
