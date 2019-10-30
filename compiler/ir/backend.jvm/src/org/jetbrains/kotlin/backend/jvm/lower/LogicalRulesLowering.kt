@@ -23,9 +23,7 @@ import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrRuleBody
-import org.jetbrains.kotlin.ir.expressions.IrRuleIsOneOf
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.linkLogicalRules
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
@@ -227,8 +225,22 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
 
         override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: IrClass) {
             if (expression.iterator == null) {
-                val arg = (expression.browse as IrCall).getValueArgument(0)!!
-                val field = data.addField("iterator\$${expression.idx}", arg.type, JavaVisibilities.PACKAGE_VISIBILITY)
+                val type = (expression.browse as IrCall).type
+                val field = data.addField("iterator\$${expression.idx}", type, JavaVisibilities.PACKAGE_VISIBILITY)
+                expression.iterator = field.symbol
+            }
+        }
+
+        override fun visitRuleVariable(expression: IrRuleVariable, data: IrClass) {
+            if (expression.field == null) {
+                val field = data.addField("variable\$${expression.idx}", expression.variable.type, JavaVisibilities.PACKAGE_VISIBILITY)
+                expression.field = field.symbol
+            }
+        }
+
+        override fun visitRuleCall(expression: IrRuleCall, data: IrClass) {
+            if (expression.iterator == null) {
+                val field = data.addField("iterator\$${expression.idx}", expression.call.type, JavaVisibilities.PACKAGE_VISIBILITY)
                 expression.iterator = field.symbol
             }
         }

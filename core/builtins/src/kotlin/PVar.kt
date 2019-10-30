@@ -33,6 +33,15 @@ class PVar<A>(var value: A? = null) {
         }
     }
 
+    fun unify(v: PVar<A>): Boolean {
+        if (value == null) {
+            value = v.value
+            return true
+        } else {
+            return value == v.value
+        }
+    }
+
     fun browse(iterator: Iterator<A>): Iterator<A>? {
         if (value == null) {
             if (!iterator.hasNext())

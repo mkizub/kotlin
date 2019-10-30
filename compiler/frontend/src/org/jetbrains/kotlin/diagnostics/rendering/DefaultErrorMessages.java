@@ -465,6 +465,8 @@ public class DefaultErrorMessages {
         MAP.put(NESTED_CLASS_NOT_ALLOWED, "{0} is not allowed here", STRING);
         MAP.put(NESTED_CLASS_DEPRECATED, "{0} is deprecated here", STRING);
 
+        MAP.put(NO_LOGICAL_OPERATOR, "Expression is not separated by logical operator (';' or ',')");
+
         MAP.put(HAS_NEXT_MISSING, "hasNext() cannot be called on iterator() of type ''{0}''", RENDER_TYPE);
         MAP.put(HAS_NEXT_FUNCTION_AMBIGUITY, "hasNext() is ambiguous for iterator() of type ''{0}''", RENDER_TYPE);
         MAP.put(HAS_NEXT_FUNCTION_NONE_APPLICABLE, "None of the hasNext() functions is applicable for iterator() of type ''{0}''", RENDER_TYPE);

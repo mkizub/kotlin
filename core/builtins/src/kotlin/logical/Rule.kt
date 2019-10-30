@@ -11,22 +11,17 @@
 
 package kotlin.logical
 
-interface Rule {
-    /**
-     * Returns an [Iterator] that returns Unit.
-     * Iterator's hasNext() returns true is next solution found
-     */
-    operator fun iterator(): Iterator<Boolean>
-}
+// Unlike normal iterators Rule does not throw NoSuchElementException, just returns false
+// also, define next():Boolean
+interface Rule : Iterable<Boolean>, Iterator<Boolean>
 
 private typealias State = Int
 
 private const val State_NotReady: State = 0
 private const val State_Ready: State = 1
 private const val State_Done: State = 2
-private const val State_Failed: State = 3
 
-abstract class RuleFrame : Rule, Iterator<Boolean> {
+abstract class RuleFrame : Rule {
 
     final override fun iterator(): Iterator<Boolean> = this
 
@@ -43,29 +38,25 @@ abstract class RuleFrame : Rule, Iterator<Boolean> {
                     state = State_Done; false
                 }
             }
-            State_Done -> false
             State_Ready -> true
-            else -> throw exceptionalState()
+            State_Done -> false
+            else -> false
         }
     }
 
     final override fun next(): Boolean {
         return when (state) {
-            State_NotReady -> nextNotReady()
+            State_NotReady -> {
+                if (calculate()) {
+                    state = State_Ready; true
+                } else {
+                    state = State_Done; false
+                }
+            }
             State_Ready -> {
                 state = State_NotReady; true
             }
-            else -> throw exceptionalState()
+            else -> false
         }
-    }
-
-    private fun nextNotReady(): Boolean {
-        if (!hasNext()) throw NoSuchElementException() else return next()
-    }
-
-    private fun exceptionalState(): Throwable = when (state) {
-        State_Done -> NoSuchElementException()
-        State_Failed -> IllegalStateException("Iterator has failed.")
-        else -> IllegalStateException("Unexpected state of the iterator: $state")
     }
 }

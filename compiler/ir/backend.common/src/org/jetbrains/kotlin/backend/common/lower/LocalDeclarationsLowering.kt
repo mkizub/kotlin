@@ -158,16 +158,18 @@ class LocalDeclarationsLowering(
 
     private class LogicalRuleContext(irRuleBody: IrRuleBody, val outerContext: LocalContext?) : LocalContext() {
         // parameters or original rule function are mapped onto fields of frame class
-        val capturedValueToField: MutableMap<IrValueParameter, IrField> = mutableMapOf()
+        val capturedValueToField: MutableMap<IrValueDeclaration, IrField> = mutableMapOf()
         // frame parameter to access fields
         val frameParameter: IrValueParameter
         // original rule declaration
         val origFunction: IrFunction
+        // frame class
+        val frameClass: IrClass
 
         init {
             origFunction = irRuleBody.originalFunctionSymbol.owner
+            frameClass = irRuleBody.frameClassSymbol!!.owner
             val bodyFunction = irRuleBody.stateMachineFunctionSymbol!!.owner
-            val frameClass = irRuleBody.frameClassSymbol!!.owner
 
             frameParameter = bodyFunction.valueParameters.find {
                 it.name.asString() == "frame\$\$"
@@ -288,6 +290,16 @@ class LocalDeclarationsLowering(
                 } else {
                     super.visitRuleBody(body)
                 }
+            }
+
+            override fun visitRuleVariable(declaration: IrRuleVariable): IrExpression {
+                if (localContext is LogicalRuleContext) {
+                    val rc: LogicalRuleContext = localContext
+                    val field = rc.frameClass.declarations.find { it is IrField && it.symbol == declaration.field }
+                    if (field is IrField)
+                        rc.capturedValueToField[declaration.variable] = field
+                }
+                return declaration
             }
 
             override fun visitGetValue(expression: IrGetValue): IrExpression {

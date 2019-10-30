@@ -54,7 +54,6 @@ import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 import java.util.*
-import kotlin.collections.ArrayList
 
 sealed class ExpressionInfo
 
@@ -351,6 +350,12 @@ class ExpressionCodegen(
 
     override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: BlockInfo): PromisedValue =
         generateRuleIsOneOf(expression, data)
+
+    override fun visitRuleVariable(expression: IrRuleVariable, data: BlockInfo): PromisedValue =
+        generateRuleVariable(expression, data)
+
+    override fun visitRuleCall(expression: IrRuleCall, data: BlockInfo): PromisedValue =
+        generateRuleCall(expression, data)
 
     override fun visitContainerExpression(expression: IrContainerExpression, data: BlockInfo) =
         visitStatementContainer(expression, data).coerce(expression.type)

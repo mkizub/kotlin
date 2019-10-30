@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.ir.expressions
 
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
 
 interface IrRuleExpression : IrExpression {
@@ -61,4 +62,14 @@ interface IrRuleWhile : IrRuleExpression {
 }
 
 interface IrRuleCut : IrRuleExpression {
+}
+
+interface IrRuleVariable : IrRuleExpression {
+    val variable: IrVariable
+    var field: IrFieldSymbol?
+}
+
+interface IrRuleCall : IrRuleExpression {
+    val call: IrCall
+    var iterator: IrFieldSymbol?
 }

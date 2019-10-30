@@ -152,4 +152,6 @@ interface IrElementTransformer<in D> : IrElementVisitor<IrElement, D> {
     override fun visitRuleCutExpression(expression: IrRuleCut, data: D) = visitRuleExpression(expression, data)
     override fun visitRuleIsThe(expression: IrRuleIsThe, data: D) = visitRuleExpression(expression, data)
     override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: D) = visitRuleExpression(expression, data)
+    override fun visitRuleVariable(expression: IrRuleVariable, data: D) = visitRuleExpression(expression, data)
+    override fun visitRuleCall(expression: IrRuleCall, data: D) = visitRuleExpression(expression, data)
 }

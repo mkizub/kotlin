@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.util.slicedMap.WritableSlice;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.jetbrains.kotlin.diagnostics.Errors.NO_LOGICAL_OPERATOR;
 import static org.jetbrains.kotlin.types.TypeUtils.*;
 import static org.jetbrains.kotlin.types.expressions.CoercionStrategy.COERCION_TO_UNIT;
 
@@ -172,8 +173,26 @@ public class ExpressionTypingServices {
     }
 
     @NotNull
-    public KotlinTypeInfo getBlockReturnedType(KtBlockExpression expression, ExpressionTypingContext context, boolean isStatement) {
-        return getBlockReturnedType(expression, isStatement ? CoercionStrategy.COERCION_TO_UNIT : CoercionStrategy.NO_COERCION, context);
+    public KotlinTypeInfo getBlockReturnedType(KtBlockExpression expression, ExpressionTypingContext context, boolean isStatement, boolean isRule) {
+        if (isRule) {
+            for (KtExpression statement : expression.getStatements()) {
+                if (statement instanceof KtDeclaration)
+                    continue;
+                PsiElement ns = statement.getNextSibling();
+                for (; ns != null && ns.getNode() != null; ns = ns.getNextSibling()) {
+                    IElementType next = ns.getNode().getElementType();
+                    if (next == KtTokens.WHITE_SPACE)
+                        continue;
+                    boolean semicolon = next == KtTokens.SEMICOLON;
+                    boolean comma = next == KtTokens.COMMA;
+                    boolean rbrace = next == KtTokens.RBRACE;
+                    if (!(semicolon || comma || rbrace))
+                        context.trace.report(NO_LOGICAL_OPERATOR.on(ns));
+                    break;
+                }
+            }
+        }
+        return getBlockReturnedType(expression, (isStatement || isRule) ? CoercionStrategy.COERCION_TO_UNIT : CoercionStrategy.NO_COERCION, context);
     }
 
     @NotNull

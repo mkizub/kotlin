@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.ir.expressions.impl
 
 import org.jetbrains.kotlin.ir.assertCast
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.IrRuleExpression.LinkData
 import org.jetbrains.kotlin.ir.symbols.IrFieldSymbol
@@ -34,7 +35,11 @@ class IrRuleLeafImpl(
     type: IrType
 ) : IrRuleExpressionBase(startOffset, endOffset, type),
     IrRuleLeaf {
-    constructor(startOffset: Int, endOffset: Int, type: IrType, expr: IrExpression?, btrk: IrExpression?) : this(startOffset, endOffset, type) {
+    constructor(startOffset: Int, endOffset: Int, type: IrType, expr: IrExpression?, btrk: IrExpression?) : this(
+        startOffset,
+        endOffset,
+        type
+    ) {
         this.expr = expr
         this.btrk = btrk
     }
@@ -107,10 +112,10 @@ class IrRuleOrImpl(
     IrRuleOr {
     override var base
         get() = if (rules.isEmpty()) 0 else rules[0].base
-        set(value) = throw AssertionError("Value for base state cannot be set")
+        set(@Suppress("UNUSED_PARAMETER") value) = throw AssertionError("Value for base state cannot be set")
     override var idx
         get() = if (rules.isEmpty()) 0 else rules[0].idx
-        set(value) = throw AssertionError("Value for index cannot be set")
+        set(@Suppress("UNUSED_PARAMETER") value) = throw AssertionError("Value for index cannot be set")
 
     override val rules: MutableList<IrRuleExpression> = ArrayList(2)
 
@@ -135,10 +140,10 @@ class IrRuleAndImpl(
     IrRuleAnd {
     override var base
         get() = if (rules.isEmpty()) 0 else rules[0].base
-        set(value) = throw AssertionError("Value for base state cannot be set")
+        set(@Suppress("UNUSED_PARAMETER") value) = throw AssertionError("Value for base state cannot be set")
     override var idx
         get() = if (rules.isEmpty()) 0 else rules[0].idx
-        set(value) = throw AssertionError("Value for index cannot be set")
+        set(@Suppress("UNUSED_PARAMETER") value) = throw AssertionError("Value for index cannot be set")
 
     override val rules: MutableList<IrRuleExpression> = ArrayList(2)
 
@@ -201,6 +206,50 @@ class IrRuleIsOneOfImpl(
     override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
         access = access.transform(transformer, data).assertCast()
         browse = browse.transform(transformer, data)
+    }
+}
+
+class IrRuleVariableImpl(
+    startOffset: Int,
+    endOffset: Int,
+    type: IrType,
+    override var variable: IrVariable,
+    override var field: IrFieldSymbol?
+) : IrRuleExpressionBase(startOffset, endOffset, type),
+    IrRuleVariable {
+
+    override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
+        return visitor.visitRuleVariable(this, data)
+    }
+
+    override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
+        variable.accept(visitor, data)
+    }
+
+    override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
+        variable = variable.transform(transformer, data).assertCast()
+    }
+}
+
+class IrRuleCallImpl(
+    startOffset: Int,
+    endOffset: Int,
+    type: IrType,
+    override var call: IrCall,
+    override var iterator: IrFieldSymbol?
+) : IrRuleExpressionBase(startOffset, endOffset, type),
+    IrRuleCall {
+
+    override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
+        return visitor.visitRuleCall(this, data)
+    }
+
+    override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
+        call.accept(visitor, data)
+    }
+
+    override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
+        call = call.transform(transformer, data).assertCast()
     }
 }
 

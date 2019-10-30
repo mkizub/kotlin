@@ -22527,6 +22527,11 @@ public class IrBlackBoxCodegenTestGenerated extends AbstractIrBlackBoxCodegenTes
             runTest("compiler/testData/codegen/box/rules/false.kt");
         }
 
+        @TestMetadata("fun.kt")
+        public void testFun() throws Exception {
+            runTest("compiler/testData/codegen/box/rules/fun.kt");
+        }
+
         @TestMetadata("leaf.kt")
         public void testLeaf() throws Exception {
             runTest("compiler/testData/codegen/box/rules/leaf.kt");

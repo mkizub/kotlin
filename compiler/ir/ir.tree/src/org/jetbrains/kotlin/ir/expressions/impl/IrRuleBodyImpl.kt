@@ -12,8 +12,7 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
+import java.lang.AssertionError
 
 class IrRuleBodyImpl(
     startOffset: Int,
@@ -82,6 +81,10 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
 
     override fun visitElement(element: IrElement, data: IrRuleExpression.LinkData) {
         // do nothing
+    }
+
+    override fun visitRuleExpression(element: IrRuleExpression, data: IrRuleExpression.LinkData) {
+        throw AssertionError("not implemented")
     }
 
     override fun visitRuleBody(body: IrRuleBody, data: IrRuleExpression.LinkData) {
@@ -174,6 +177,21 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
 
     override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleIsOneOfImpl
+        expr.link = data
+        expr.idx = ++totalNodes
+        expr.base = allocNewState()
+        expr.depth = pushDepth()
+    }
+
+    override fun visitRuleVariable(expression: IrRuleVariable, data: IrRuleExpression.LinkData) {
+        val expr = expression as IrRuleVariableImpl
+        expr.link = data
+        expr.idx = ++totalNodes
+        expr.depth = stateDepth
+    }
+
+    override fun visitRuleCall(expression: IrRuleCall, data: IrRuleExpression.LinkData) {
+        val expr = expression as IrRuleCallImpl
         expr.link = data
         expr.idx = ++totalNodes
         expr.base = allocNewState()

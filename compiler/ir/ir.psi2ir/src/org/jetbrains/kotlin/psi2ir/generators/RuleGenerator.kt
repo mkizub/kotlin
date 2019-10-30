@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.psi2ir.generators
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.builders.Scope
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -75,7 +76,13 @@ class RuleGenerator(
         val stat = this.genExpr()
         if (stat is IrRuleExpression)
             return stat
-        return IrRuleLeafImpl(stat.startOffset, stat.endOffset, unitType, stat.assertCast(), null)
+        if (stat is IrVariable)
+            return IrRuleVariableImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        if (stat is IrCall)
+            return IrRuleCallImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        if (stat is IrExpression)
+            return IrRuleLeafImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        throw AssertionError("Unexpected statement in rule body")
     }
 
     private fun KtElement.genExpr(): IrStatement {
@@ -111,7 +118,7 @@ class RuleGenerator(
     }
 
     private fun isCutBaseExpr(expr: KtExpression?): Boolean =
-        expr == null || KtPsiUtil.isBooleanConstant(expr);
+        expr == null || KtPsiUtil.isBooleanConstant(expr)
 
     override fun visitPrefixExpression(expression: KtPrefixExpression, data: Nothing?): IrStatement {
         if (expression.operationToken == KtTokens.EXCLEXCL && isCutBaseExpr(expression.baseExpression))
@@ -127,7 +134,7 @@ class RuleGenerator(
     }
 }
 
-class RuleExpressionGenerator(statementGenerator: StatementGenerator): StatementGeneratorExtension(statementGenerator) {
+class RuleExpressionGenerator(statementGenerator: StatementGenerator) : StatementGeneratorExtension(statementGenerator) {
 
     private fun generateCall(
         resolvedCall: ResolvedCall<*>,
@@ -156,5 +163,4 @@ class RuleExpressionGenerator(statementGenerator: StatementGenerator): Statement
         val resultType = context.irBuiltIns.unitType
         return IrRuleIsOneOfImpl(expression.startOffsetSkippingComments, expression.endOffset, resultType, irGetVar, irBrowseCall, null)
     }
-
 }

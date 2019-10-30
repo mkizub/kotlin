@@ -1059,6 +1059,8 @@ public interface Errors {
     DiagnosticFactory1<KtClassOrObject, String> NESTED_CLASS_NOT_ALLOWED = DiagnosticFactory1.create(ERROR, DECLARATION_NAME);
     DiagnosticFactory1<KtClassOrObject, String> NESTED_CLASS_DEPRECATED = DiagnosticFactory1.create(WARNING, DECLARATION_NAME);
 
+    DiagnosticFactory0<PsiElement> NO_LOGICAL_OPERATOR = DiagnosticFactory0.create(WARNING);
+
     //Inline and inlinable parameters
     DiagnosticFactory2<KtElement, DeclarationDescriptor, DeclarationDescriptor> NON_PUBLIC_CALL_FROM_PUBLIC_INLINE = DiagnosticFactory2.create(ERROR, CALL_ELEMENT);
     DiagnosticFactory2<KtElement, DeclarationDescriptor, DeclarationDescriptor> PRIVATE_CLASS_MEMBER_FROM_INLINE = DiagnosticFactory2.create(ERROR, CALL_ELEMENT);

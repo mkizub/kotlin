@@ -92,6 +92,9 @@ interface IrElementVisitorVoid : IrElementVisitor<Unit, Nothing?> {
     fun visitBlockBody(body: IrBlockBody) = visitBody(body)
     override fun visitBlockBody(body: IrBlockBody, data: Nothing?) = visitBlockBody(body)
 
+    fun visitRuleBody(body: IrRuleBody) = visitBody(body)
+    override fun visitRuleBody(body: IrRuleBody, data: Nothing?) = visitRuleBody(body)
+
     fun visitSyntheticBody(body: IrSyntheticBody) = visitBody(body)
     override fun visitSyntheticBody(body: IrSyntheticBody, data: Nothing?) = visitSyntheticBody(body)
 
@@ -261,6 +264,36 @@ interface IrElementVisitorVoid : IrElementVisitor<Unit, Nothing?> {
 
     fun visitErrorCallExpression(expression: IrErrorCallExpression) = visitErrorExpression(expression)
     override fun visitErrorCallExpression(expression: IrErrorCallExpression, data: Nothing?) = visitErrorCallExpression(expression)
+
+    fun visitRuleExpression(expression: IrRuleExpression) = visitExpression(expression)
+    override fun visitRuleExpression(expression: IrRuleExpression, data: Nothing?) = visitRuleExpression(expression)
+
+    fun visitRuleAndExpression(expression: IrRuleAnd) = visitRuleExpression(expression)
+    override fun visitRuleAndExpression(expression: IrRuleAnd, data: Nothing?) = visitRuleAndExpression(expression)
+
+    fun visitRuleOrExpression(expression: IrRuleOr) = visitRuleExpression(expression)
+    override fun visitRuleOrExpression(expression: IrRuleOr, data: Nothing?) = visitRuleOrExpression(expression)
+
+    fun visitRuleLeafExpression(expression: IrRuleLeaf) = visitRuleExpression(expression)
+    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: Nothing?) = visitRuleLeafExpression(expression)
+
+    fun visitRuleWhileExpression(expression: IrRuleWhile) = visitRuleExpression(expression)
+    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: Nothing?) = visitRuleWhileExpression(expression)
+
+    fun visitRuleCutExpression(expression: IrRuleCut) = visitRuleExpression(expression)
+    override fun visitRuleCutExpression(expression: IrRuleCut, data: Nothing?) = visitRuleCutExpression(expression)
+
+    fun visitRuleIsThe(expression: IrRuleIsThe) = visitRuleExpression(expression)
+    override fun visitRuleIsThe(expression: IrRuleIsThe, data: Nothing?) = visitRuleIsThe(expression)
+
+    fun visitRuleIsOneOf(expression: IrRuleIsOneOf) = visitRuleExpression(expression)
+    override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: Nothing?) = visitRuleIsOneOf(expression)
+
+    fun visitRuleVariable(expression: IrRuleVariable) = visitRuleExpression(expression)
+    override fun visitRuleVariable(expression: IrRuleVariable, data: Nothing?) = visitRuleVariable(expression)
+
+    fun visitRuleCall(expression: IrRuleCall) = visitRuleExpression(expression)
+    override fun visitRuleCall(expression: IrRuleCall, data: Nothing?) = visitRuleCall(expression)
 }
 
 fun IrElement.acceptVoid(visitor: IrElementVisitorVoid) {

@@ -127,4 +127,6 @@ interface IrElementVisitor<out R, in D> {
     fun visitRuleCutExpression(expression: IrRuleCut, data: D) = visitRuleExpression(expression, data)
     fun visitRuleIsThe(expression: IrRuleIsThe, data: D) = visitRuleExpression(expression, data)
     fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleVariable(expression: IrRuleVariable, data: D) = visitRuleExpression(expression, data)
+    fun visitRuleCall(expression: IrRuleCall, data: D) = visitRuleExpression(expression, data)
 }

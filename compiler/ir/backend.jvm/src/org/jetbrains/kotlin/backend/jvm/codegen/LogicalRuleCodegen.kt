@@ -420,3 +420,85 @@ fun ExpressionCodegen.generateRuleIsOneOf(expression: IrRuleIsOneOf, data: Block
 
     return immaterialUnitValue
 }
+
+fun ExpressionCodegen.generateRuleVariable(expression: IrRuleVariable, data: BlockInfo): PromisedValue {
+    mv.mark(logicalData!!.enterLabels[expression.idx])
+
+    // initialize frame's field on entering
+    // maybe we shell add a state to cleanup value of backtracking?
+
+    //   env.variable$idx = initializer
+    //   more check
+    expression.variable.initializer?.let { initializer ->
+        val env = loadFrameVar()
+        initializer.accept(this, data).materialize()
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.field!!.owner.type).descriptor
+        mv.putfield(ownerType, expression.field!!.owner.name.asString(), valueType)
+    }
+
+    return immaterialUnitValue
+}
+
+fun ExpressionCodegen.generateRuleCall(expression: IrRuleCall, data: BlockInfo): PromisedValue {
+    mv.mark(logicalData!!.enterLabels[expression.idx])
+
+    //   env.iterator$idx = call
+    //   env.bt$depth = bt$
+    //   bt$ = N
+    // case N:
+    //   if (env.iterator$idx.hasNext())
+    //     env.iterator$idx.next()
+    //     more check
+    //   env.iterator$idx = null
+    //   backtrack
+
+    // env.iterator$idx = target.browse(arg)
+    //   env.bt$depth = bt$
+    //   bt$ = N
+    val env = logicalData!!.env
+    run {
+        loadFrameVar()
+        expression.call.accept(this, data).materialize()
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.iterator!!.owner.type).descriptor
+        mv.putfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        saveBacktrackState(expression.depth)
+        mv.iconst(expression.base)
+        mv.store(logicalData!!.btv.index, Type.INT_TYPE)
+    }
+    // case N:
+    mv.mark(logicalData!!.stateLabels[expression.base])
+    //   if (env.iterator$idx.hasNext())
+    //     env.iterator$idx.next()
+    //     more check
+    run {
+        val backtrackLabel = Label()
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.iterator!!.owner.type).descriptor
+        loadFrameVar()
+        mv.getfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        mv.invokeinterface("java/util/Iterator", "hasNext", "()Z")
+        mv.ifeq(backtrackLabel)
+        loadFrameVar()
+        mv.getfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        mv.invokeinterface("java/util/Iterator", "next", "()Ljava/lang/Object;")
+        mv.pop()
+        createCodeMoreCheck(expression, true)
+        mv.mark(backtrackLabel)
+    }
+
+    //   env.iterator$idx = null
+    //   backtrack
+    run {
+        loadFrameVar()
+        mv.aconst(null)
+        val ownerType = typeMapper.mapType(env).internalName
+        val valueType = typeMapper.mapType(expression.iterator!!.owner.type).descriptor
+        mv.putfield(ownerType, expression.iterator!!.owner.name.asString(), valueType)
+        createCodeBacktrack(expression, true)
+    }
+
+    return immaterialUnitValue
+}
+

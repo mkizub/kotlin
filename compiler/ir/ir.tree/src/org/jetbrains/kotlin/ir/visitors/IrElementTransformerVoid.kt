@@ -300,6 +300,12 @@ abstract class IrElementTransformerVoid : IrElementTransformer<Nothing?> {
     open fun visitRuleIsOneOf(expression: IrRuleIsOneOf) = visitRuleExpression(expression)
     final override fun visitRuleIsOneOf(expression: IrRuleIsOneOf, data: Nothing?) = visitRuleIsOneOf(expression)
 
+    open fun visitRuleVariable(expression: IrRuleVariable) = visitRuleExpression(expression)
+    final override fun visitRuleVariable(expression: IrRuleVariable, data: Nothing?) = visitRuleVariable(expression)
+
+    open fun visitRuleCall(expression: IrRuleCall) = visitRuleExpression(expression)
+    final override fun visitRuleCall(expression: IrRuleCall, data: Nothing?) = visitRuleCall(expression)
+
     protected inline fun <T : IrElement> T.transformPostfix(body: T.() -> Unit): T {
         transformChildrenVoid()
         this.body()

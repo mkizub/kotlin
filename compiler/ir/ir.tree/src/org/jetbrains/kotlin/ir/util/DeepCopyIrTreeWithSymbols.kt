@@ -855,4 +855,20 @@ open class DeepCopyIrTreeWithSymbols(
             expression.iterator
         ).copyAttributes(expression)
 
+    override fun visitRuleVariable(expression: IrRuleVariable): IrRuleVariableImpl =
+        IrRuleVariableImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.variable.transform(),
+            expression.field
+        ).copyAttributes(expression)
+
+    override fun visitRuleCall(expression: IrRuleCall): IrRuleCallImpl =
+        IrRuleCallImpl(
+            expression.startOffset, expression.endOffset,
+            expression.type.remapType(),
+            expression.call.transform(),
+            expression.iterator
+        ).copyAttributes(expression)
+
 }
