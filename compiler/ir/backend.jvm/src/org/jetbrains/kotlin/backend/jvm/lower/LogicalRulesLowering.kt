@@ -24,13 +24,14 @@ import org.jetbrains.kotlin.ir.builders.declarations.*
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrVariableImpl
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
 import org.jetbrains.kotlin.ir.expressions.impl.linkLogicalRules
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.isRule
-import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
-import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
-import org.jetbrains.kotlin.ir.visitors.acceptChildrenVoid
+import org.jetbrains.kotlin.ir.visitors.*
 import org.jetbrains.kotlin.load.java.JavaVisibilities
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -122,7 +123,7 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
             isSuspend = false
         )
         bodyFunc.origin = IrDeclarationOrigin.LOGICAL_RULES_BODY
-        bodyFunc.addValueParameter("frame\$\$", frameClass.defaultType)
+        val frameParam = bodyFunc.addValueParameter("frame\$\$", frameClass.defaultType)
         frameClass.addCalculateFunction(bodyFunc)
 
         irRuleBody.frameClassSymbol = frameClass.symbol
@@ -130,6 +131,7 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
         generateRuleBody(bodyFunc, irRuleBody)
 
         addIteratorFields(irRuleBody, frameClass)
+        rewriteLocalVariables(ruleFunc, bodyFunc, frameParam, frameClass)
 
         return bodyFunc
     }
@@ -233,7 +235,8 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
 
         override fun visitRuleVariable(expression: IrRuleVariable, data: IrClass) {
             if (expression.field == null) {
-                val field = data.addField("variable\$${expression.idx}", expression.variable.type, JavaVisibilities.PACKAGE_VISIBILITY)
+                val name = "${expression.variable.name}$${expression.idx}"
+                val field = data.addField(name, expression.variable.type, JavaVisibilities.PACKAGE_VISIBILITY)
                 expression.field = field.symbol
             }
         }
@@ -248,5 +251,62 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
 
     private fun addIteratorFields(irRuleBody: IrRuleBody, frameClass: IrClass) {
         irRuleBody.accept(addIteratorVisitor, frameClass)
+    }
+
+    private fun rewriteLocalVariables(origFunction: IrFunction, bodyFunc: IrFunction, frameParam: IrValueParameter, frameClass: IrClass) {
+
+        // parameters or original rule function are mapped onto fields of frame class
+        val capturedValueToField: MutableMap<IrValueDeclaration, IrField> = mutableMapOf()
+        origFunction.valueParameters.forEach { param ->
+            val field = frameClass.declarations.find { it is IrField && it.name == param.name }
+            if (field is IrField)
+                capturedValueToField[param] = field
+        }
+
+        bodyFunc.transformChildrenVoid(object : IrElementTransformerVoid() {
+
+            override fun visitGetValue(expression: IrGetValue): IrExpression {
+                var expr: IrExpression = expression
+                val field = capturedValueToField[expression.symbol.owner]
+                if (field != null) {
+                    val startOffset = expression.startOffset
+                    val endOffset = expression.endOffset
+                    expr = IrGetFieldImpl(
+                        startOffset, endOffset, field.symbol,
+                        type = field.type,
+                        receiver = IrGetValueImpl(startOffset, endOffset, frameParam.type, frameParam.symbol)
+                    )
+                }
+                expr.transformChildrenVoid();
+                return expr
+            }
+
+            override fun visitSetVariable(expression: IrSetVariable): IrExpression {
+                var expr: IrExpression = expression
+                val field = capturedValueToField[expression.symbol.owner]
+                if (field != null) {
+                    val startOffset = expression.startOffset
+                    val endOffset = expression.endOffset
+                    expr = IrSetFieldImpl(
+                        startOffset, endOffset, field.symbol,
+                        receiver = IrGetValueImpl(startOffset, endOffset, frameParam.type, frameParam.symbol),
+                        value = expression.value,
+                        type = field.type
+                    )
+                }
+                expr.transformChildrenVoid();
+                return expr
+            }
+
+            override fun visitRuleVariable(declaration: IrRuleVariable): IrExpression {
+                val field = frameClass.declarations.find { it is IrField && it.symbol == declaration.field }
+                if (field is IrField)
+                    capturedValueToField[declaration.variable] = field
+                declaration.transformChildrenVoid();
+                return declaration
+            }
+
+
+        })
     }
 }

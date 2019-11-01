@@ -1,11 +1,13 @@
 rule fun foo() {
     val x = PVar<Int>()
+    var y = 7
     x ?= 3
-;   x @= 1..6
+;   x @= 1..6, y = 3 + x.value!!
 ;   {
     ;   bar(x)
     ;   baz()
-    }
+    },
+    y++
 }
 rule fun bar(x: PVar<Int>) {
     {
