@@ -693,10 +693,10 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
     override fun visitRuleExpression(expression: IrRuleExpression, data: Nothing?): String =
         "RULE_EXPR ?"
 
-    override fun visitRuleAndExpression(expression: IrRuleAnd, data: Nothing?): String =
+    override fun visitRuleAnd(expression: IrRuleAnd, data: Nothing?): String =
         "RULE_AND"
 
-    override fun visitRuleOrExpression(expression: IrRuleOr, data: Nothing?): String =
+    override fun visitRuleOr(expression: IrRuleOr, data: Nothing?): String =
         "RULE_OR"
 
     private fun StringBuilder.appendRuleExpr(prefix: String, expression: IrRuleExpression) {
@@ -731,13 +731,16 @@ class RenderIrElementVisitor : IrElementVisitor<String, Nothing?> {
         }
     }
 
-    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: Nothing?): String =
+    override fun visitRuleLeaf(expression: IrRuleLeaf, data: Nothing?): String =
         buildTrimEnd { appendRuleExpr("RULE_LEAF   ", expression) }
 
-    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: Nothing?): String =
+    override fun visitRuleWhen(expression: IrRuleWhen, data: Nothing?): String =
+        buildTrimEnd { appendRuleExpr("RULE_WHEN  ", expression) }
+
+    override fun visitRuleWhile(expression: IrRuleWhile, data: Nothing?): String =
         buildTrimEnd { appendRuleExpr("RULE_WHILE  ", expression) }
 
-    override fun visitRuleCutExpression(expression: IrRuleCut, data: Nothing?): String =
+    override fun visitRuleCut(expression: IrRuleCut, data: Nothing?): String =
         buildTrimEnd { appendRuleExpr("RULE_CUT    ", expression) }
 
     override fun visitRuleIsThe(expression: IrRuleIsThe, data: Nothing?): String =

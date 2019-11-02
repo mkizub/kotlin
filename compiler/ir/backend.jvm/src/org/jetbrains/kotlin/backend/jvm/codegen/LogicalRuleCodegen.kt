@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.ir.expressions.impl.linkLogicalRules
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.isIterator
+import org.jetbrains.kotlin.ir.util.isFalseConst
+import org.jetbrains.kotlin.ir.util.isTrueConst
 import org.jetbrains.org.objectweb.asm.Label
 import org.jetbrains.org.objectweb.asm.Type
 
@@ -157,7 +159,7 @@ private fun ExpressionCodegen.createCodeMoreCheck(expr: IrRuleExpression, force:
     }
 }
 
-fun ExpressionCodegen.generateRuleLeafExpression(expression: IrRuleLeaf, data: BlockInfo): PromisedValue {
+fun ExpressionCodegen.generateRuleLeaf(expression: IrRuleLeaf, data: BlockInfo): PromisedValue {
     mv.mark(logicalData!!.enterLabels[expression.idx])
 
     val expr = expression.expr
@@ -209,7 +211,31 @@ fun ExpressionCodegen.generateRuleLeafExpression(expression: IrRuleLeaf, data: B
     return immaterialUnitValue
 }
 
-fun ExpressionCodegen.generateRuleWhileExpression(expression: IrRuleWhile, data: BlockInfo): PromisedValue {
+fun ExpressionCodegen.generateRuleWhen(expression: IrRuleWhen, data: BlockInfo): PromisedValue {
+    mv.mark(logicalData!!.enterLabels[expression.idx])
+
+    expression.subject?.accept(this, data)
+
+    val endLabel = Label()
+    for (branch in expression.branches) {
+        val elseLabel = Label()
+        if (branch.condition.isFalseConst() || branch.condition.isTrueConst()) {
+            if (branch.condition.isFalseConst())
+                continue // The branch body is dead code.
+        } else {
+            branch.condition.accept(this, data).coerceToBoolean().jumpIfFalse(elseLabel)
+        }
+        branch.result.accept(this, data).coerce(expression.type).discard()
+        createCodeMoreCheck(expression, true)
+        mv.mark(elseLabel)
+    }
+    mv.mark(endLabel)
+    createCodeBacktrack(expression, false)
+
+    return immaterialUnitValue
+}
+
+fun ExpressionCodegen.generateRuleWhile(expression: IrRuleWhile, data: BlockInfo): PromisedValue {
     mv.mark(logicalData!!.enterLabels[expression.idx])
 
     // env.bt$depth = bt$
@@ -237,7 +263,7 @@ fun ExpressionCodegen.generateRuleWhileExpression(expression: IrRuleWhile, data:
 }
 
 @Suppress("UNUSED_PARAMETER")
-fun ExpressionCodegen.generateRuleCutExpression(expression: IrRuleCut, data: BlockInfo): PromisedValue {
+fun ExpressionCodegen.generateRuleCut(expression: IrRuleCut, data: BlockInfo): PromisedValue {
     mv.mark(logicalData!!.enterLabels[expression.idx])
 
     // bt$ = 0

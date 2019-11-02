@@ -37,12 +37,6 @@ interface IrExpressionBody : IrBody {
 interface IrBlockBody : IrBody, IrStatementContainer
 
 interface IrRuleBody : IrBody, IrStatement {
-    // original function, it will return RuleFrame instance
-    val originalFunctionSymbol: IrSimpleFunctionSymbol
-    // function with generated state machine
-    var stateMachineFunctionSymbol: IrSimpleFunctionSymbol?
-    // concrete frame class generated for this state machine
-    var frameClassSymbol: IrClassSymbol?
 
     var expression: IrRuleExpression?
 

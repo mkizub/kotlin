@@ -48,7 +48,7 @@ class IrRuleLeafImpl(
     override var btrk: IrExpression? = null
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
-        return visitor.visitRuleLeafExpression(this, data)
+        return visitor.visitRuleLeaf(this, data)
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
@@ -59,6 +59,47 @@ class IrRuleLeafImpl(
     override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
         expr = expr?.transform(transformer, data)
         btrk = btrk?.transform(transformer, data)
+    }
+}
+
+class IrRuleWhenImpl(
+    startOffset: Int,
+    endOffset: Int,
+    type: IrType,
+    override val origin: IrStatementOrigin?
+) : IrRuleExpressionBase(startOffset, endOffset, type),
+    IrRuleWhen {
+
+    constructor(
+        startOffset: Int,
+        endOffset: Int,
+        type: IrType,
+        origin: IrStatementOrigin?,
+        subject: IrVariable?,
+        branches: List<IrBranch>
+    ) : this(startOffset, endOffset, type, origin) {
+        this.subject = subject
+        this.branches.addAll(branches)
+    }
+
+    override var subject: IrVariable? = null
+
+    override val branches: MutableList<IrBranch> = ArrayList()
+
+    override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
+        return visitor.visitRuleWhen(this, data)
+    }
+
+    override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
+        subject?.accept(visitor, data)
+        branches.forEach { it.accept(visitor, data) }
+    }
+
+    override fun <D> transformChildren(transformer: IrElementTransformer<D>, data: D) {
+        subject = subject?.transform(transformer, data)?.assertCast()
+        branches.forEachIndexed { i, irBranch ->
+            branches[i] = irBranch.transform(transformer, data)
+        }
     }
 }
 
@@ -75,7 +116,7 @@ class IrRuleWhileImpl(
     override var cond: IrExpression? = null
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
-        return visitor.visitRuleWhileExpression(this, data)
+        return visitor.visitRuleWhile(this, data)
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
@@ -90,11 +131,12 @@ class IrRuleWhileImpl(
 class IrRuleCutImpl(
     startOffset: Int,
     endOffset: Int,
-    type: IrType
+    type: IrType,
+    override val fail: Boolean
 ) : IrRuleExpressionBase(startOffset, endOffset, type),
     IrRuleCut {
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
-        return visitor.visitRuleCutExpression(this, data)
+        return visitor.visitRuleCut(this, data)
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
@@ -120,7 +162,7 @@ class IrRuleOrImpl(
     override val rules: MutableList<IrRuleExpression> = ArrayList(2)
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
-        return visitor.visitRuleOrExpression(this, data)
+        return visitor.visitRuleOr(this, data)
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {
@@ -148,7 +190,7 @@ class IrRuleAndImpl(
     override val rules: MutableList<IrRuleExpression> = ArrayList(2)
 
     override fun <R, D> accept(visitor: IrElementVisitor<R, D>, data: D): R {
-        return visitor.visitRuleAndExpression(this, data)
+        return visitor.visitRuleAnd(this, data)
     }
 
     override fun <D> acceptChildren(visitor: IrElementVisitor<Unit, D>, data: D) {

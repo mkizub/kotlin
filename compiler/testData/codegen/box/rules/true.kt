@@ -19,7 +19,7 @@ fun box(): String {
     } catch (t: Throwable) {
         return "Fail"
     }
-    if (!throwed)
+    if (throwed)
         return "Fail"
     return "OK"
 }

@@ -63,7 +63,7 @@ class BodyGenerator(
         return irBlockBody
     }
 
-    fun generateRuleBody(originalFunctionSymbol: IrSymbol, ktBody: KtExpression): IrRuleBody {
+    fun generateRuleBody(ktBody: KtExpression): IrRuleBody {
         val ruleGenerator = RuleGenerator(this, scope)
 
         val expression: IrRuleExpression = if (ktBody is KtBlockExpression) {
@@ -79,7 +79,6 @@ class BodyGenerator(
         val irRuleBody = IrRuleBodyImpl(
             ktBody.startOffsetSkippingComments,
             ktBody.endOffset,
-            originalFunctionSymbol as IrSimpleFunctionSymbol,
             expression
         )
         irRuleBody.linkLogicalRules()

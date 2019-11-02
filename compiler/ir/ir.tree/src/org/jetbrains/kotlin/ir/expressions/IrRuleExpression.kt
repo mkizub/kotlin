@@ -57,11 +57,16 @@ interface IrRuleLeaf : IrRuleExpression {
     val btrk: IrExpression?
 }
 
+interface IrRuleWhen : IrRuleExpression, IrWhen {
+    var subject: IrVariable?
+}
+
 interface IrRuleWhile : IrRuleExpression {
     val cond: IrExpression?
 }
 
 interface IrRuleCut : IrRuleExpression {
+    val fail: Boolean
 }
 
 interface IrRuleVariable : IrRuleExpression {
@@ -73,3 +78,4 @@ interface IrRuleCall : IrRuleExpression {
     val call: IrCall
     var iterator: IrFieldSymbol?
 }
+

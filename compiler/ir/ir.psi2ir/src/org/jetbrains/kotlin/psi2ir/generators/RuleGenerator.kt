@@ -8,16 +8,19 @@ package org.jetbrains.kotlin.psi2ir.generators
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.assertCast
 import org.jetbrains.kotlin.ir.builders.Scope
+import org.jetbrains.kotlin.ir.builders.primitiveOp1
+import org.jetbrains.kotlin.ir.builders.whenComma
 import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.types.isIterable
 import org.jetbrains.kotlin.ir.types.isLogicalRule
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffsetSkippingComments
 import org.jetbrains.kotlin.psi2ir.deparenthesize
+import org.jetbrains.kotlin.psi2ir.intermediate.defaultLoad
+import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
 
 class RuleGenerator(
@@ -25,8 +28,24 @@ class RuleGenerator(
     scope: Scope
 ) : StatementGenerator(bodyGenerator, scope) {
 
+    private fun wrapExpr(stat: IrStatement): IrRuleExpression {
+        val unitType = this@RuleGenerator.context.irBuiltIns.unitType
+        if (stat is IrRuleExpression)
+            return stat
+        if (stat is IrVariable)
+            return IrRuleVariableImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        if (stat is IrCall && stat.type.isLogicalRule())
+            return IrRuleCallImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        if (stat is IrExpression)
+            return IrRuleLeafImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
+        throw AssertionError("Unexpected statement in rule body")
+    }
+
     private fun KtElement.genRuleExpr(): IrRuleExpression {
         val unitType = this@RuleGenerator.context.irBuiltIns.unitType
+        if (this is KtWhenExpression) {
+            return generateWhen(this)
+        }
         if (this is KtWhileExpressionBase) {
             val body = this.body
             if (body != null) {
@@ -76,15 +95,7 @@ class RuleGenerator(
             return IrRuleLeafImpl(startOffsetSkippingComments, endOffset, unitType, expr?.assertCast(), btrk?.assertCast())
         }
         val stat = this.genExpr()
-        if (stat is IrRuleExpression)
-            return stat
-        if (stat is IrVariable)
-            return IrRuleVariableImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
-        if (stat is IrCall && stat.type.isLogicalRule())
-            return IrRuleCallImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
-        if (stat is IrExpression)
-            return IrRuleLeafImpl(stat.startOffset, stat.endOffset, unitType, stat, null)
-        throw AssertionError("Unexpected statement in rule body")
+        return wrapExpr(stat)
     }
 
     private fun KtElement.genExpr(): IrStatement {
@@ -136,17 +147,149 @@ class RuleGenerator(
     private fun isCutBaseExpr(expr: KtExpression?): Boolean =
         expr == null || KtPsiUtil.isBooleanConstant(expr)
 
+    private fun isCutFailExpr(expr: KtExpression?): Boolean =
+        expr != null && KtPsiUtil.isFalseConstant(expr)
+
     override fun visitPrefixExpression(expression: KtPrefixExpression, data: Nothing?): IrStatement {
         if (expression.operationToken == KtTokens.EXCLEXCL && isCutBaseExpr(expression.baseExpression))
-            return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
+            return IrRuleCutImpl(
+                expression.startOffsetSkippingComments, expression.endOffset,
+                context.irBuiltIns.unitType, isCutFailExpr(expression.baseExpression)
+            )
         if (expression.operationToken == KtTokens.EXCL) {
             val base = expression.baseExpression
             if (base == null)
-                return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
+                return IrRuleCutImpl(
+                    expression.startOffsetSkippingComments, expression.endOffset,
+                    context.irBuiltIns.unitType, true
+                )
             else if (base is KtPrefixExpression && base.operationToken == KtTokens.EXCL && isCutBaseExpr(base.baseExpression))
-                return IrRuleCutImpl(expression.startOffsetSkippingComments, expression.endOffset, context.irBuiltIns.unitType)
+                return IrRuleCutImpl(
+                    expression.startOffsetSkippingComments, expression.endOffset,
+                    context.irBuiltIns.unitType, isCutFailExpr(base.baseExpression)
+                )
         }
         return super.visitPrefixExpression(expression, data)
+    }
+
+    override fun visitWhenExpression(expression: KtWhenExpression, data: Nothing?): IrStatement {
+        return generateWhen(expression)
+    }
+
+    private fun generateWhen(expression: KtWhenExpression): IrRuleWhen {
+        val unitType = context.irBuiltIns.unitType
+
+        val irSubject = generateWhenSubject(expression)
+
+        val irWhen = IrRuleWhenImpl(expression.startOffsetSkippingComments, expression.endOffset, unitType, IrStatementOrigin.WHEN)
+        irWhen.subject = irSubject
+
+        for (ktEntry in expression.entries) {
+            if (ktEntry.isElse) {
+                val irElseResult = wrapExpr(ktEntry.expression!!.genExpr())
+                irWhen.branches.add(
+                    IrElseBranchImpl(
+                        IrConstImpl.boolean(irElseResult.startOffset, irElseResult.endOffset, context.irBuiltIns.booleanType, true),
+                        irElseResult
+                    )
+                )
+                break
+            }
+
+            var irBranchCondition: IrExpression? = null
+            for (ktCondition in ktEntry.conditions) {
+                val irCondition =
+                    if (irSubject != null)
+                        generateWhenConditionWithSubject(ktCondition, irSubject)
+                    else
+                        generateWhenConditionNoSubject(ktCondition)
+                irBranchCondition = irBranchCondition?.let { context.whenComma(it, irCondition) } ?: irCondition
+            }
+
+            val irBranchResult = wrapExpr(ktEntry.expression!!.genExpr())
+            irWhen.branches.add(IrBranchImpl(irBranchCondition!!, irBranchResult))
+        }
+        //addElseBranchForExhaustiveWhenIfNeeded(irWhen, expression)
+        //return generateWhenBody(expression, irSubject, irWhen)
+        return irWhen
+    }
+
+    private fun generateWhenSubject(expression: KtWhenExpression): IrVariable? {
+        val subjectVariable = expression.subjectVariable
+        val subjectExpression = expression.subjectExpression
+        return when {
+            subjectVariable != null -> visitProperty(subjectVariable, null) as IrVariable
+            subjectExpression != null -> scope.createTemporaryVariable(subjectExpression.genExpr().assertCast(), "subject")
+            else -> null
+        }
+    }
+
+    private fun generateWhenConditionNoSubject(ktCondition: KtWhenCondition): IrExpression =
+        (ktCondition as KtWhenConditionWithExpression).expression!!.genExpr().assertCast()
+
+    private fun generateWhenConditionWithSubject(ktCondition: KtWhenCondition, irSubject: IrVariable): IrExpression {
+        return when (ktCondition) {
+            is KtWhenConditionWithExpression ->
+                generateEqualsCondition(irSubject, ktCondition)
+            is KtWhenConditionInRange ->
+                generateInRangeCondition(irSubject, ktCondition)
+            is KtWhenConditionIsPattern ->
+                generateIsPatternCondition(irSubject, ktCondition)
+            else ->
+                throw AssertionError("Unexpected 'when' condition: ${ktCondition.text}")
+        }
+    }
+
+    private fun generateIsPatternCondition(irSubject: IrVariable, ktCondition: KtWhenConditionIsPattern): IrExpression {
+        val typeOperand = getOrFail(BindingContext.TYPE, ktCondition.typeReference)
+        val irTypeOperand = typeOperand.toIrType()
+        val irInstanceOf = IrTypeOperatorCallImpl(
+            ktCondition.startOffsetSkippingComments, ktCondition.endOffset,
+            context.irBuiltIns.booleanType,
+            IrTypeOperator.INSTANCEOF,
+            irTypeOperand,
+            irSubject.defaultLoad()
+        )
+        return if (ktCondition.isNegated)
+            primitiveOp1(
+                ktCondition.startOffsetSkippingComments, ktCondition.endOffset,
+                context.irBuiltIns.booleanNotSymbol,
+                context.irBuiltIns.booleanType,
+                IrStatementOrigin.EXCL,
+                irInstanceOf
+            )
+        else
+            irInstanceOf
+    }
+
+    private fun generateInRangeCondition(irSubject: IrVariable, ktCondition: KtWhenConditionInRange): IrExpression {
+        val inCall = pregenerateCall(getResolvedCall(ktCondition.operationReference)!!)
+        inCall.irValueArgumentsByIndex[0] = irSubject.defaultLoad()
+        val inOperator = getInfixOperator(ktCondition.operationReference.getReferencedNameElementType())
+        val irInCall = CallGenerator(this).generateCall(ktCondition, inCall, inOperator)
+        return when (inOperator) {
+            IrStatementOrigin.IN ->
+                irInCall
+            IrStatementOrigin.NOT_IN ->
+                primitiveOp1(
+                    ktCondition.startOffsetSkippingComments, ktCondition.endOffset,
+                    context.irBuiltIns.booleanNotSymbol,
+                    context.irBuiltIns.booleanType,
+                    IrStatementOrigin.EXCL,
+                    irInCall
+                )
+            else -> throw AssertionError("Expected 'in' or '!in', got $inOperator")
+        }
+    }
+
+    private fun generateEqualsCondition(irSubject: IrVariable, ktCondition: KtWhenConditionWithExpression): IrExpression {
+        val ktExpression = ktCondition.expression
+        val irExpression = ktExpression!!.genExpr().assertCast<IrExpression>()
+        return OperatorExpressionGenerator(this).generateEquality(
+            ktCondition.startOffsetSkippingComments, ktCondition.endOffset, IrStatementOrigin.EQEQ,
+            irSubject.defaultLoad(), irExpression,
+            context.bindingContext[BindingContext.PRIMITIVE_NUMERIC_COMPARISON_INFO, ktExpression]
+        )
     }
 }
 

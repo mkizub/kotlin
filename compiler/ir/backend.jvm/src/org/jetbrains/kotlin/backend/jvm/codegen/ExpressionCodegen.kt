@@ -322,28 +322,35 @@ class ExpressionCodegen(
         return immaterialUnitValue
     }
 
-    override fun visitRuleAndExpression(expression: IrRuleAnd, data: BlockInfo): PromisedValue {
+    override fun visitRuleAnd(expression: IrRuleAnd, data: BlockInfo): PromisedValue {
         expression.rules.forEach {
             it.accept(this, data).discard()
         }
         return immaterialUnitValue
     }
 
-    override fun visitRuleOrExpression(expression: IrRuleOr, data: BlockInfo): PromisedValue {
+    override fun visitRuleOr(expression: IrRuleOr, data: BlockInfo): PromisedValue {
         expression.rules.forEach {
             it.accept(this, data).discard()
         }
         return immaterialUnitValue
     }
 
-    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: BlockInfo): PromisedValue =
-        generateRuleLeafExpression(expression, data)
+    override fun visitRuleLeaf(expression: IrRuleLeaf, data: BlockInfo): PromisedValue =
+        generateRuleLeaf(expression, data)
 
-    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: BlockInfo): PromisedValue =
-        generateRuleWhileExpression(expression, data)
+    override fun visitRuleWhen(expression: IrRuleWhen, data: BlockInfo): PromisedValue {
+        val info = BlockInfo(data)
+        generateRuleWhen(expression, info)
+        writeLocalVariablesInTable(info, markNewLabel())
+        return immaterialUnitValue
+    }
 
-    override fun visitRuleCutExpression(expression: IrRuleCut, data: BlockInfo): PromisedValue =
-        generateRuleCutExpression(expression, data)
+    override fun visitRuleWhile(expression: IrRuleWhile, data: BlockInfo): PromisedValue =
+        generateRuleWhile(expression, data)
+
+    override fun visitRuleCut(expression: IrRuleCut, data: BlockInfo): PromisedValue =
+        generateRuleCut(expression, data)
 
     override fun visitRuleIsThe(expression: IrRuleIsThe, data: BlockInfo): PromisedValue =
         generateRuleIsThe(expression, data)

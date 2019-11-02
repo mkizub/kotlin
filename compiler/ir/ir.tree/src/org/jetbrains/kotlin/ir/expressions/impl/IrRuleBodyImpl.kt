@@ -8,25 +8,16 @@ package org.jetbrains.kotlin.ir.expressions.impl
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrElementBase
 import org.jetbrains.kotlin.ir.expressions.*
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
-import java.lang.AssertionError
 
 class IrRuleBodyImpl(
     startOffset: Int,
     endOffset: Int,
-    override val originalFunctionSymbol: IrSimpleFunctionSymbol,
     override var expression: IrRuleExpression?
 ) :
     IrElementBase(startOffset, endOffset),
-    IrRuleBody
-{
-    // function with generated state machine
-    override var stateMachineFunctionSymbol: IrSimpleFunctionSymbol? = null
-    // concrete frame class generated for this state machine
-    override var frameClassSymbol: IrClassSymbol? = null
+    IrRuleBody {
 
     // max backtrace stack depth
     override var depth: Int = 0
@@ -83,7 +74,7 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         // do nothing
     }
 
-    override fun visitRuleExpression(element: IrRuleExpression, data: IrRuleExpression.LinkData) {
+    override fun visitRuleExpression(expression: IrRuleExpression, data: IrRuleExpression.LinkData) {
         throw AssertionError("not implemented")
     }
 
@@ -98,7 +89,7 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         body.nodes = totalNodes
     }
 
-    override fun visitRuleOrExpression(expression: IrRuleOr, data: IrRuleExpression.LinkData) {
+    override fun visitRuleOr(expression: IrRuleOr, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleOrImpl
         expr.link = data
         expr.depth = stateDepth
@@ -116,7 +107,7 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         setDepth(maxDepth)
     }
 
-    override fun visitRuleAndExpression(expression: IrRuleAnd, data: IrRuleExpression.LinkData) {
+    override fun visitRuleAnd(expression: IrRuleAnd, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleAndImpl
         expr.link = data
         expr.depth = stateDepth
@@ -141,14 +132,17 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
             expr.rules[max].accept(this, IrRuleExpression.LinkData(data.next, back, jumpBack))
     }
 
-    override fun visitRuleCutExpression(expression: IrRuleCut, data: IrRuleExpression.LinkData) {
+    override fun visitRuleCut(expression: IrRuleCut, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleCutImpl
-        expr.link = IrRuleExpression.LinkData(data.next, null, false)
+        if (expr.fail)
+            expr.link = IrRuleExpression.LinkData(null, null, false)
+        else
+            expr.link = IrRuleExpression.LinkData(data.next, null, false)
         expr.idx = ++totalNodes
         expr.depth = stateDepth
     }
 
-    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: IrRuleExpression.LinkData) {
+    override fun visitRuleLeaf(expression: IrRuleLeaf, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleLeafImpl
         expr.link = data
         expr.idx = ++totalNodes
@@ -159,7 +153,21 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         }
     }
 
-    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: IrRuleExpression.LinkData) {
+    override fun visitRuleWhen(expression: IrRuleWhen, data: IrRuleExpression.LinkData) {
+        val expr = expression as IrRuleWhenImpl
+        expr.link = data
+        expr.idx = ++totalNodes
+        expr.depth = stateDepth
+
+        var maxDepth = stateDepth
+        for (b in expr.branches) {
+            b.result.accept(this, data)
+            maxDepth = maxDepth.coerceAtLeast(stateDepth)
+        }
+        setDepth(maxDepth)
+    }
+
+    override fun visitRuleWhile(expression: IrRuleWhile, data: IrRuleExpression.LinkData) {
         val expr = expression as IrRuleWhileImpl
         expr.link = data
         expr.idx = ++totalNodes

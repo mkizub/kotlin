@@ -268,20 +268,23 @@ interface IrElementVisitorVoid : IrElementVisitor<Unit, Nothing?> {
     fun visitRuleExpression(expression: IrRuleExpression) = visitExpression(expression)
     override fun visitRuleExpression(expression: IrRuleExpression, data: Nothing?) = visitRuleExpression(expression)
 
-    fun visitRuleAndExpression(expression: IrRuleAnd) = visitRuleExpression(expression)
-    override fun visitRuleAndExpression(expression: IrRuleAnd, data: Nothing?) = visitRuleAndExpression(expression)
+    fun visitRuleAnd(expression: IrRuleAnd) = visitRuleExpression(expression)
+    override fun visitRuleAnd(expression: IrRuleAnd, data: Nothing?) = visitRuleAnd(expression)
 
-    fun visitRuleOrExpression(expression: IrRuleOr) = visitRuleExpression(expression)
-    override fun visitRuleOrExpression(expression: IrRuleOr, data: Nothing?) = visitRuleOrExpression(expression)
+    fun visitRuleOr(expression: IrRuleOr) = visitRuleExpression(expression)
+    override fun visitRuleOr(expression: IrRuleOr, data: Nothing?) = visitRuleOr(expression)
 
-    fun visitRuleLeafExpression(expression: IrRuleLeaf) = visitRuleExpression(expression)
-    override fun visitRuleLeafExpression(expression: IrRuleLeaf, data: Nothing?) = visitRuleLeafExpression(expression)
+    fun visitRuleLeaf(expression: IrRuleLeaf) = visitRuleExpression(expression)
+    override fun visitRuleLeaf(expression: IrRuleLeaf, data: Nothing?) = visitRuleLeaf(expression)
 
-    fun visitRuleWhileExpression(expression: IrRuleWhile) = visitRuleExpression(expression)
-    override fun visitRuleWhileExpression(expression: IrRuleWhile, data: Nothing?) = visitRuleWhileExpression(expression)
+    fun visitRuleWhen(expression: IrRuleWhen) = visitRuleExpression(expression)
+    override fun visitRuleWhen(expression: IrRuleWhen, data: Nothing?) = visitRuleWhen(expression)
 
-    fun visitRuleCutExpression(expression: IrRuleCut) = visitRuleExpression(expression)
-    override fun visitRuleCutExpression(expression: IrRuleCut, data: Nothing?) = visitRuleCutExpression(expression)
+    fun visitRuleWhile(expression: IrRuleWhile) = visitRuleExpression(expression)
+    override fun visitRuleWhile(expression: IrRuleWhile, data: Nothing?) = visitRuleWhile(expression)
+
+    fun visitRuleCut(expression: IrRuleCut) = visitRuleExpression(expression)
+    override fun visitRuleCut(expression: IrRuleCut, data: Nothing?) = visitRuleCut(expression)
 
     fun visitRuleIsThe(expression: IrRuleIsThe) = visitRuleExpression(expression)
     override fun visitRuleIsThe(expression: IrRuleIsThe, data: Nothing?) = visitRuleIsThe(expression)

@@ -126,8 +126,6 @@ private class LinkLogicalRulesLowering(private val context: JvmBackendContext) :
         val frameParam = bodyFunc.addValueParameter("frame\$\$", frameClass.defaultType)
         frameClass.addCalculateFunction(bodyFunc)
 
-        irRuleBody.frameClassSymbol = frameClass.symbol
-        irRuleBody.stateMachineFunctionSymbol = bodyFunc.symbol
         generateRuleBody(bodyFunc, irRuleBody)
 
         addIteratorFields(irRuleBody, frameClass)
