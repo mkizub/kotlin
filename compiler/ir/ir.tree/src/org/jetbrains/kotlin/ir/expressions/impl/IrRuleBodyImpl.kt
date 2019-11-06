@@ -117,9 +117,12 @@ private class LinkVisitor : IrElementVisitor<Unit, IrRuleExpression.LinkData> {
         for (i in 0 until max) {
             val r = expr.rules[i]
             r.accept(this, IrRuleExpression.LinkData(expr.rules[i + 1], back, jumpBack))
-            if ((r is IrRuleLeaf && r.btrk != null) || r is IrRuleWhile) {
-                back = r
-                jumpBack = false
+            // TODO: What about IrRuleWhen?
+            if (r is IrRuleLeaf) {
+                if (r.btrk != null) {
+                    back = r
+                    jumpBack = false
+                }
             } else if (r is IrRuleCut) {
                 back = null
                 jumpBack = false
